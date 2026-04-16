@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import CountrySearchSelect from '../select/CountrySearchSelect';
 
 const CountryModal = ({ isOpen, onClose, onSave, country = null }) => {
     // Estado inicial dinámico: si hay country editamos, si no, creamos uno vacío
@@ -73,15 +74,16 @@ const CountryModal = ({ isOpen, onClose, onSave, country = null }) => {
                     </div>
 
                     <div className="space-y-5 max-w-2xl mx-auto">
-                        {/* Campo Nombre */}
                         <div className="flex items-center">
-                            <label className="w-1/3 text-right pr-6 text-slate-500 font-bold text-[13px] uppercase">País</label>
-                            <input
-                                type="text"
-                                value={formData.nombre}
-                                onChange={(e) => setFormData({ ...formData, nombre: e.target.value.toUpperCase() })}
-                                className="w-2/3 border border-gray-300 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-400 bg-[#f9f9f9]"
-                                placeholder="EJ: MÉXICO"
+                            <label className="w-1/3 text-right pr-6 text-slate-500 font-bold text-[13px] uppercase">
+                                País
+                            </label>
+
+                            <CountrySearchSelect
+                                value={formData.pais}
+                                onChange={(value) =>
+                                    setFormData({ ...formData, pais: value.toUpperCase() })
+                                }
                             />
                         </div>
 

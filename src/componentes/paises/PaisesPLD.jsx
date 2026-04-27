@@ -1,20 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Search, Plus, Copy, Pencil } from 'lucide-react';
 import CountryModal from './modal/CountryModal';
 
 const PaisesPLD = () => {
     const [activeTab, setActiveTab] = useState('paraiso');
-
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCountry, setSelectedCountry] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchInput, setSearchInput] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 10;
 
     const handleAdd = () => {
         setSelectedCountry(null);
         setIsModalOpen(true);
     };
+
     const handleEdit = (country) => {
         setSelectedCountry(country);
         setIsModalOpen(true);
+    };
+
+    const handleSearch = () => {
+        setSearchQuery(searchInput.trim().toLowerCase());
+        setCurrentPage(1);
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') handleSearch();
     };
 
     const data = [
@@ -28,7 +41,43 @@ const PaisesPLD = () => {
         { nombre: 'BERMUDAS', descripcion: 'BERMUDAS', codigo: 'BM', largo: '', cnbv: '50' },
         { nombre: 'CURAZAO', descripcion: 'CURAZAO', codigo: 'CW', largo: '', cnbv: '50' },
         { nombre: 'DOMINICA', descripcion: 'DOMINICA', codigo: 'DM', largo: '', cnbv: '50' },
+        { nombre: 'EMIRATOS ARABES', descripcion: 'EMIRATOS ARABES', codigo: 'AE', largo: '', cnbv: '50' },
+        { nombre: 'GIBRALTAR', descripcion: 'GIBRALTAR', codigo: 'GI', largo: '', cnbv: '50' },
+        { nombre: 'GUERNSEY', descripcion: 'GUERNSEY', codigo: 'GG', largo: '', cnbv: '50' },
+        { nombre: 'HONG KONG', descripcion: 'HONG KONG', codigo: 'HK', largo: '', cnbv: '50' },
+        { nombre: 'ISLA DE MAN', descripcion: 'ISLA DE MAN', codigo: 'IM', largo: '', cnbv: '50' },
+        { nombre: 'ISLAS CAIMAN', descripcion: 'ISLAS CAIMAN', codigo: 'KY', largo: '', cnbv: '50' },
+        { nombre: 'JERSEY', descripcion: 'JERSEY', codigo: 'JE', largo: '', cnbv: '50' },
+        { nombre: 'LIECHTENSTEIN', descripcion: 'LIECHTENSTEIN', codigo: 'LI', largo: '', cnbv: '50' },
+        { nombre: 'LUXEMBURGO', descripcion: 'LUXEMBURGO', codigo: 'LU', largo: '', cnbv: '50' },
+        { nombre: 'MACAO', descripcion: 'MACAO', codigo: 'MO', largo: '', cnbv: '50' },
     ];
+
+    const filtered = useMemo(() => {
+        if (!searchQuery) return data;
+        return data.filter(row =>
+            row.nombre.toLowerCase().includes(searchQuery) ||
+            row.descripcion.toLowerCase().includes(searchQuery) ||
+            row.codigo.toLowerCase().includes(searchQuery) ||
+            row.largo.toLowerCase().includes(searchQuery) ||
+            row.cnbv.toLowerCase().includes(searchQuery)
+        );
+    }, [searchQuery]);
+
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
+    const endIndex = Math.min(startIndex + PAGE_SIZE, filtered.length);
+    const pageData = filtered.slice(startIndex, endIndex);
+
+    const getPageNumbers = () => {
+        const pages = [];
+        const maxVisible = 5;
+        let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+        let end = Math.min(totalPages, start + maxVisible - 1);
+        if (end - start + 1 < maxVisible) start = Math.max(1, end - maxVisible + 1);
+        for (let i = start; i <= end; i++) pages.push(i);
+        return pages;
+    };
 
     return (
         <div className="min-h-screen bg-[#f4f7f9] p-6 font-sans text-slate-600">
@@ -39,9 +88,15 @@ const PaisesPLD = () => {
                     <input
                         type="text"
                         placeholder="Buscar"
+                        value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
+                        onKeyDown={handleKeyDown}
                         className="px-4 py-1.5 outline-none text-sm w-64"
                     />
-                    <button className="bg-gray-50 px-4 py-1.5 text-xs text-gray-400 border-l hover:bg-gray-100 transition-colors">
+                    <button
+                        onClick={handleSearch}
+                        className="bg-gray-50 px-4 py-1.5 text-xs text-gray-400 border-l hover:bg-gray-100 transition-colors"
+                    >
                         Ir
                     </button>
                 </div>
@@ -54,22 +109,19 @@ const PaisesPLD = () => {
                 <div className="flex border-b border-gray-200 bg-white px-4 pt-4 gap-1">
                     <button
                         onClick={() => setActiveTab('paraiso')}
-                        className={`px-4 py-2 text-[11px] font-bold uppercase border-t border-x rounded-t transition-all ${activeTab === 'paraiso' ? 'bg-white border-gray-200 -mb-[1px] text-slate-700' : 'bg-transparent border-transparent text-slate-400'
-                            }`}
+                        className={`px-4 py-2 text-[11px] font-bold uppercase border-t border-x rounded-t transition-all ${activeTab === 'paraiso' ? 'bg-white border-gray-200 -mb-[1px] text-slate-700' : 'bg-transparent border-transparent text-slate-400'}`}
                     >
                         Listado Paraiso Fiscal
                     </button>
                     <button
                         onClick={() => setActiveTab('no-coperantes')}
-                        className={`px-4 py-2 text-[11px] font-bold uppercase transition-all ${activeTab === 'no-coperantes' ? 'text-slate-700' : 'text-slate-400 hover:text-slate-600'
-                            }`}
+                        className={`px-4 py-2 text-[11px] font-bold uppercase transition-all ${activeTab === 'no-coperantes' ? 'text-slate-700' : 'text-slate-400 hover:text-slate-600'}`}
                     >
                         Paises no coperantes
                     </button>
                     <button
                         onClick={() => setActiveTab('deficientes')}
-                        className={`px-4 py-2 text-[11px] font-bold uppercase transition-all ${activeTab === 'deficientes' ? 'text-slate-700' : 'text-slate-400 hover:text-slate-600'
-                            }`}
+                        className={`px-4 py-2 text-[11px] font-bold uppercase transition-all ${activeTab === 'deficientes' ? 'text-slate-700' : 'text-slate-400 hover:text-slate-600'}`}
                     >
                         Medidas deficientes
                     </button>
@@ -84,10 +136,10 @@ const PaisesPLD = () => {
                             </button>
                         ))}
                     </div>
-
                     <div className="flex items-center gap-2">
-                        <button className="bg-[#337ab7] hover:bg-[#286090] text-white px-3 py-1.5 rounded text-[11px] flex items-center gap-1 transition-colors"
+                        <button
                             onClick={handleAdd}
+                            className="bg-[#337ab7] hover:bg-[#286090] text-white px-3 py-1.5 rounded text-[11px] flex items-center gap-1 transition-colors"
                         >
                             <Plus size={14} strokeWidth={3} /> Agregar
                         </button>
@@ -114,37 +166,83 @@ const PaisesPLD = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 text-[12px] text-slate-600">
-                            {data.map((row, index) => (
-                                <tr key={index} className="hover:bg-gray-50 transition-colors group">
-                                    <td className="py-3 px-2 text-slate-500">{row.nombre}</td>
-                                    <td className="py-3 px-2 text-slate-500">{row.descripcion}</td>
-                                    <td className="py-3 px-2 text-slate-500">{row.codigo}</td>
-                                    <td className="py-3 px-2 text-slate-500">{row.largo}</td>
-                                    <td className="py-3 px-2 text-right pr-4 text-slate-400 group-hover:text-slate-600">{row.cnbv}</td>
-                                    <td className="py-3 px-2 text-right pr-4 text-slate-400 group-hover:text-slate-600">
-                                        <button onClick={() => handleEdit(row)} className="text-blue-500 hover:text-blue-700">
-                                            <Pencil size={14} />
-                                        </button>
+                            {pageData.length > 0 ? (
+                                pageData.map((row, index) => (
+                                    <tr key={index} className="hover:bg-gray-50 transition-colors group">
+                                        <td className="py-3 px-2 text-slate-500">{row.nombre}</td>
+                                        <td className="py-3 px-2 text-slate-500">{row.descripcion}</td>
+                                        <td className="py-3 px-2 text-slate-500">{row.codigo}</td>
+                                        <td className="py-3 px-2 text-slate-500">{row.largo}</td>
+                                        <td className="py-3 px-2 text-right pr-4 text-slate-400 group-hover:text-slate-600">{row.cnbv}</td>
+                                        <td className="py-3 px-2 text-right pr-4 text-slate-400 group-hover:text-slate-600">
+                                            <button onClick={() => handleEdit(row)} className="text-blue-500 hover:text-blue-700">
+                                                <Pencil size={14} />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={6} className="py-8 text-center text-slate-400">
+                                        No se encontraron resultados.
                                     </td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
                     </table>
                 </div>
 
-                {/* Paginación */}
-                <div className="flex justify-end p-4 border-t border-gray-100 bg-white">
+                {/* Footer con info + Paginación */}
+                <div className="flex justify-between items-center p-4 border-t border-gray-100 bg-white">
+                    <span className="text-[12px] text-slate-400">
+                        {filtered.length === 0
+                            ? 'Sin resultados'
+                            : `Mostrando ${startIndex + 1} – ${endIndex} de ${filtered.length} registros`
+                        }
+                    </span>
                     <div className="flex items-center border border-gray-300 rounded overflow-hidden text-[12px]">
-                        <button className="px-3 py-1 border-r hover:bg-gray-100">«</button>
-                        <button className="px-3 py-1 border-r bg-[#337ab7] text-white">1</button>
-                        <button className="px-3 py-1 border-r hover:bg-gray-100">2</button>
-                        <button className="px-3 py-1 border-r hover:bg-gray-100">3</button>
-                        <button className="px-3 py-1 border-r hover:bg-gray-100">4</button>
-                        <button className="px-3 py-1 hover:bg-gray-100">»</button>
+                        <button
+                            onClick={() => setCurrentPage(1)}
+                            disabled={currentPage === 1}
+                            className="px-3 py-1 border-r hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                            «
+                        </button>
+                        <button
+                            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                            disabled={currentPage === 1}
+                            className="px-3 py-1 border-r hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                            ‹
+                        </button>
+                        {getPageNumbers().map(page => (
+                            <button
+                                key={page}
+                                onClick={() => setCurrentPage(page)}
+                                className={`px-3 py-1 border-r transition-colors ${currentPage === page ? 'bg-[#337ab7] text-white' : 'hover:bg-gray-100'}`}
+                            >
+                                {page}
+                            </button>
+                        ))}
+                        <button
+                            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                            disabled={currentPage === totalPages}
+                            className="px-3 py-1 border-r hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                            ›
+                        </button>
+                        <button
+                            onClick={() => setCurrentPage(totalPages)}
+                            disabled={currentPage === totalPages}
+                            className="px-3 py-1 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                            »
+                        </button>
                     </div>
                 </div>
 
             </div>
+
             <CountryModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}

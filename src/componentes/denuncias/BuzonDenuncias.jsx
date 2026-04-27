@@ -14,8 +14,10 @@ import {
     CheckCircle,
     XCircle,
     AlertCircle,
-    Loader
+    Loader,
+    Shield
 } from 'lucide-react';
+import DenunciaAnonima from './denuncias_anonimas/DenunciaAnonima';
 
 const BuzonDenuncias = () => {
     const [selectedStatus, setSelectedStatus] = useState('todas');
@@ -25,6 +27,7 @@ const BuzonDenuncias = () => {
     const [selectedDenuncia, setSelectedDenuncia] = useState(null);
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [uploadedFiles, setUploadedFiles] = useState([]);
+    const [showFormAnonimo, setShowFormAnonimo] = useState(false);
 
     // Sample data
     const denuncias = [
@@ -157,6 +160,11 @@ const BuzonDenuncias = () => {
         return denuncias.filter(d => d.status === status).length;
     };
 
+    const handleDenunciaAnonima = (nuevaDenuncia) => {
+        denuncias.unshift(nuevaDenuncia); // O con useState si tienes el array en estado
+        setShowFormAnonimo(false);
+    };
+
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
@@ -175,6 +183,20 @@ const BuzonDenuncias = () => {
                         <div className="text-sm text-gray-600">
                             <span className="font-semibold">{filteredDenuncias.length}</span> de <span className="font-semibold">{denuncias.length}</span> denuncias
                         </div>
+                        <div className="flex items-center gap-3">
+                            <div className="text-sm text-gray-600">
+                                <span className="font-semibold">{filteredDenuncias.length}</span> de{' '}
+                                <span className="font-semibold">{denuncias.length}</span> denuncias
+                            </div>
+                            <button
+                                onClick={() => setShowFormAnonimo(true)}
+                                className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                            >
+                                <Shield className="w-4 h-4" />
+                                Denuncia Anónima
+                            </button>
+                        </div>
+
                     </div>
                 </div>
             </header>
@@ -499,8 +521,8 @@ const BuzonDenuncias = () => {
                                                     console.log('Changing status to:', key);
                                                 }}
                                                 className={`p-3 rounded-lg border-2 transition-all ${selectedDenuncia.status === key
-                                                        ? config.color + ' border-current'
-                                                        : 'border-gray-200 hover:border-gray-300'
+                                                    ? config.color + ' border-current'
+                                                    : 'border-gray-200 hover:border-gray-300'
                                                     }`}
                                             >
                                                 <div className="flex items-center space-x-2">
@@ -629,6 +651,19 @@ const BuzonDenuncias = () => {
                                 Subir {uploadedFiles.length > 0 && `(${uploadedFiles.length})`}
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+            {showFormAnonimo && (
+                <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[95vh] overflow-y-auto relative">
+                        <button
+                            onClick={() => setShowFormAnonimo(false)}
+                            className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-lg z-10 transition-colors"
+                        >
+                            <X className="w-5 h-5 text-gray-600" />
+                        </button>
+                        <DenunciaAnonima onDenunciaEnviada={handleDenunciaAnonima} />
                     </div>
                 </div>
             )}

@@ -10,6 +10,7 @@ import Monitoreo from "../monitoreos/Monitoreo";
 import BuzonDenuncias from "../denuncias/BuzonDenuncias";
 import ConfigurarPlantilla from "../configuracion_excel/ConfigurarPlantilla";
 import SettingsPage from "../configuracion/SettingsPage";
+import DenunciaAnonima from "../denuncias/denuncias_anonimas/DenunciaAnonima";
 
 export default function GeminiPLD() {
   const [filters, setFilters] = useState({
@@ -295,7 +296,7 @@ export default function GeminiPLD() {
         {currentView === "monitoreo" && <Monitoreo />}
         {currentView === "denuncias" && <BuzonDenuncias />}
         {currentView === "configuracion" && <SettingsPage />}
-
+        {currentView === "denuncia-anonima" && <DenunciaAnonima />}
 
         {currentView === "auditoria" && (
           <div className="bg-white rounded-xl shadow-lg p-8 text-center">

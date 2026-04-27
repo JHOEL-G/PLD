@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, User, List, Database, Check, Trash2, AlertTriangle } from 'lucide-react';
+import { ChevronDown, User, List, Check, Trash2, AlertTriangle } from 'lucide-react';
 
 const LISTAS_CONFIG = [
     { id: 'personasPoliticamenteExpuestas', label: 'Personas Políticamente Expuestas' },
@@ -19,7 +19,6 @@ const LISTAS_CONFIG = [
     { id: 'listaPepint', label: 'Lista PEPINT' },
 ];
 
-// Modal reutilizable
 const Modal = ({ isOpen, onClose, icon, title, message, actions }) => {
     if (!isOpen) return null;
     return (
@@ -34,6 +33,39 @@ const Modal = ({ isOpen, onClose, icon, title, message, actions }) => {
     );
 };
 
+// ✅ FUERA del componente principal
+const InputField = ({ label, name, type = "text", placeholder, value, onChange }) => (
+    <div className="flex flex-col space-y-1">
+        <label className="text-sm font-medium text-gray-600">
+            {label}
+        </label>
+        <input
+            type={type}
+            name={name}
+            value={value}
+            onChange={onChange}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+            placeholder={placeholder}
+        />
+    </div>
+);
+
+// ✅ FUERA del componente principal
+const RenderToggle = ({ id, label, checked, onToggle }) => (
+    <div className="flex flex-col items-start space-y-2">
+        <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            {label}
+        </label>
+        <button
+            type="button"
+            onClick={() => onToggle(id)}
+            className={`${checked ? 'bg-blue-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none`}
+        >
+            <span className={`${checked ? 'translate-x-5' : 'translate-x-0'} pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
+        </button>
+    </div>
+);
+
 const PLDScreens = () => {
     const [activeTab, setActiveTab] = useState('registro');
     const [formData, setFormData] = useState({
@@ -43,8 +75,6 @@ const PLDScreens = () => {
     const [listasData, setListasData] = useState(
         LISTAS_CONFIG.reduce((acc, curr) => ({ ...acc, [curr.id]: false }), {})
     );
-
-    // Estado de modales
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showCancelModal, setShowCancelModal] = useState(false);
@@ -53,55 +83,21 @@ const PLDScreens = () => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
+
     const handleToggleChange = (id) => {
         setListasData(prev => ({ ...prev, [id]: !prev[id] }));
     };
 
-    const handleSave = () => {
-        // Tu lógica de guardado aquí
-        setShowSaveModal(true);
-    };
-    const handleDelete = () => {
-        // Tu lógica de eliminación aquí
-        setShowDeleteModal(false);
-    };
+    const handleSave = () => setShowSaveModal(true);
+
+    const handleDelete = () => setShowDeleteModal(false);
+
     const handleCancel = () => {
-        // Tu lógica de cancelación aquí
         setShowCancelModal(false);
         setFormData({ nombreCompleto: '', rfcCurp: '', fechaNacimiento: '', alias: '', fechaListado: '', acuerdo: '', nombreDocumento: '' });
     };
-    const handleEdit = () => {
-        // Tu lógica de edición aquí
-        setActiveTab('registro');
-    };
 
-    const InputField = ({ label, name, type = "text", placeholder }) => (
-        <div className="flex flex-col space-y-1">
-            <label className="text-sm font-medium text-gray-600">
-                {label} <span className="text-red-500">*</span>
-            </label>
-            <input
-                type={type} name={name} value={formData[name] || ''}
-                onChange={handleInputChange}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                placeholder={placeholder}
-            />
-        </div>
-    );
-
-    const RenderToggle = ({ id, label }) => (
-        <div className="flex flex-col items-start space-y-2 group">
-            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider group-hover:text-blue-600 transition-colors">
-                {label}
-            </label>
-            <button
-                type="button" onClick={() => handleToggleChange(id)}
-                className={`${listasData[id] ? 'bg-blue-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none`}
-            >
-                <span className={`${listasData[id] ? 'translate-x-5' : 'translate-x-0'} pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`} />
-            </button>
-        </div>
-    );
+    const handleEdit = () => setActiveTab('registro');
 
     const navItems = [
         { id: 'registro', label: 'Registro PLD', Icon: User },
@@ -112,7 +108,6 @@ const PLDScreens = () => {
         <div className="max-w-7xl mx-auto p-6 space-y-8 bg-gray-50 min-h-screen">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
 
-                {/* Header */}
                 <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
                     <h2 className="text-lg font-medium text-gray-700">
                         Registro <span className="text-gray-400 font-normal">PLD</span>
@@ -121,11 +116,10 @@ const PLDScreens = () => {
                 </div>
 
                 <div className="flex flex-col md:flex-row">
-                    {/* Sidebar */}
                     <div className="w-full md:w-64 bg-gray-50 border-r border-gray-100 p-4 space-y-2">
                         {navItems.map(({ id, label, Icon }) => (
                             <button key={id} onClick={() => setActiveTab(id)}
-                                className={`w-full flex items-center space-x-3 px-4 py-2 text-sm rounded-lg transition-colors ${activeTab === id ? 'font-semibold text-white bg-blue-600 shadow-md shadow-blue-100' : 'text-gray-500 hover:bg-gray-100'}`}
+                                className={`w-full flex items-center space-x-3 px-4 py-2 text-sm rounded-lg transition-colors ${activeTab === id ? 'font-semibold text-white bg-blue-600' : 'text-gray-500 hover:bg-gray-100'}`}
                             >
                                 <Icon className="w-4 h-4" />
                                 <span>{label}</span>
@@ -133,7 +127,6 @@ const PLDScreens = () => {
                         ))}
                     </div>
 
-                    {/* Contenido */}
                     <div className="flex-1 p-8 min-h-[400px]">
                         {activeTab === 'registro' && (
                             <div>
@@ -141,13 +134,13 @@ const PLDScreens = () => {
                                     Información General de Registro
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <InputField label="Nombre Completo" name="nombreCompleto" placeholder="Ingresa nombre completo" />
-                                    <InputField label="RFC o CURP" name="rfcCurp" placeholder="RFC o CURP" />
-                                    <InputField label="Fecha de Nacimiento" name="fechaNacimiento" type="date" />
-                                    <InputField label="Alias" name="alias" placeholder="Alias" />
-                                    <InputField label="Fecha de Listado" name="fechaListado" type="date" />
-                                    <InputField label="Acuerdo" name="acuerdo" placeholder="Acuerdo" />
-                                    <InputField label="Nombre del Documento" name="nombreDocumento" placeholder="Nombre del Documento" />
+                                    <InputField label="Nombre Completo *" name="nombreCompleto" placeholder="Ingresa nombre completo" value={formData.nombreCompleto} onChange={handleInputChange} />
+                                    <InputField label="RFC o CURP *" name="rfcCurp" placeholder="RFC o CURP" value={formData.rfcCurp} onChange={handleInputChange} />
+                                    <InputField label="Fecha de Nacimiento *" name="fechaNacimiento" type="date" value={formData.fechaNacimiento} onChange={handleInputChange} />
+                                    <InputField label="Alias " name="alias" placeholder="Alias" value={formData.alias} onChange={handleInputChange} />
+                                    <InputField label="Fecha de Listado *" name="fechaListado" type="date" value={formData.fechaListado} onChange={handleInputChange} />
+                                    <InputField label="Acuerdo *" name="acuerdo" placeholder="Acuerdo" value={formData.acuerdo} onChange={handleInputChange} />
+                                    <InputField label="Nombre del Documento *" name="nombreDocumento" placeholder="Nombre del Documento" value={formData.nombreDocumento} onChange={handleInputChange} />
                                 </div>
                             </div>
                         )}
@@ -158,7 +151,13 @@ const PLDScreens = () => {
                                 </h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10">
                                     {LISTAS_CONFIG.map((lista) => (
-                                        <RenderToggle key={lista.id} id={lista.id} label={lista.label} />
+                                        <RenderToggle
+                                            key={lista.id}
+                                            id={lista.id}
+                                            label={lista.label}
+                                            checked={listasData[lista.id]}
+                                            onToggle={handleToggleChange}
+                                        />
                                     ))}
                                 </div>
                             </div>
@@ -166,7 +165,6 @@ const PLDScreens = () => {
                     </div>
                 </div>
 
-                {/* Barra de acciones */}
                 <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
                     <button onClick={() => setShowDeleteModal(true)}
                         className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors">
@@ -187,68 +185,40 @@ const PLDScreens = () => {
                 </div>
             </div>
 
-            {/* Modal: Guardado exitoso */}
             <Modal
                 isOpen={showSaveModal}
                 onClose={() => setShowSaveModal(false)}
-                icon={
-                    <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-                        <Check className="w-6 h-6 text-green-600" />
-                    </div>
-                }
+                icon={<div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center"><Check className="w-6 h-6 text-green-600" /></div>}
                 title="Registro guardado"
                 message="El registro PLD se ha guardado correctamente."
                 actions={
-                    <button onClick={() => setShowSaveModal(false)}
-                        className="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+                    <button onClick={() => setShowSaveModal(false)} className="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
                         Aceptar
                     </button>
                 }
             />
 
-            {/* Modal: Confirmar eliminación */}
             <Modal
                 isOpen={showDeleteModal}
                 onClose={() => setShowDeleteModal(false)}
-                icon={
-                    <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
-                        <Trash2 className="w-6 h-6 text-red-600" />
-                    </div>
-                }
+                icon={<div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center"><Trash2 className="w-6 h-6 text-red-600" /></div>}
                 title="¿Eliminar registro?"
                 message="Esta acción no se puede deshacer. ¿Confirmas que deseas eliminar este registro PLD?"
                 actions={<>
-                    <button onClick={() => setShowDeleteModal(false)}
-                        className="px-5 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100">
-                        Cancelar
-                    </button>
-                    <button onClick={handleDelete}
-                        className="px-5 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700">
-                        Eliminar
-                    </button>
+                    <button onClick={() => setShowDeleteModal(false)} className="px-5 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100">Cancelar</button>
+                    <button onClick={handleDelete} className="px-5 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700">Eliminar</button>
                 </>}
             />
 
-            {/* Modal: Confirmar cancelación */}
             <Modal
                 isOpen={showCancelModal}
                 onClose={() => setShowCancelModal(false)}
-                icon={
-                    <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
-                        <AlertTriangle className="w-6 h-6 text-yellow-600" />
-                    </div>
-                }
+                icon={<div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center"><AlertTriangle className="w-6 h-6 text-yellow-600" /></div>}
                 title="¿Cancelar cambios?"
                 message="Los cambios no guardados se perderán. ¿Deseas continuar?"
                 actions={<>
-                    <button onClick={() => setShowCancelModal(false)}
-                        className="px-5 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100">
-                        Seguir editando
-                    </button>
-                    <button onClick={handleCancel}
-                        className="px-5 py-2 text-sm font-medium text-white bg-yellow-500 rounded-lg hover:bg-yellow-600">
-                        Sí, cancelar
-                    </button>
+                    <button onClick={() => setShowCancelModal(false)} className="px-5 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100">Seguir editando</button>
+                    <button onClick={handleCancel} className="px-5 py-2 text-sm font-medium text-white bg-yellow-500 rounded-lg hover:bg-yellow-600">Sí, cancelar</button>
                 </>}
             />
         </div>

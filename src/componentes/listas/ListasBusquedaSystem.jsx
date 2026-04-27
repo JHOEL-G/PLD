@@ -16,6 +16,25 @@ import {
   Printer,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import PLDScreens from "../formularios/PLDScreens";
+
+const LISTAS_CONFIG = [
+  { id: 'personasPoliticamenteExpuestas', label: 'Personas Políticamente Expuestas' },
+  { id: 'lpbNacional', label: 'LPB Nacional' },
+  { id: 'lpbInternacionalPersonas', label: 'LPB Internacional Personas' },
+  { id: 'lpbInternacionalEntidades', label: 'LPB Internacional Entidades' },
+  { id: 'listaOfac', label: 'Lista OFAC' },
+  { id: 'listaPgr', label: 'Lista PGR' },
+  { id: 'lista69Bis', label: 'Lista 69 BIS' },
+  { id: 'pepsExtranjeros', label: 'PEPS Extranjeros' },
+  { id: 'pepsYEmpresasOtroRiesgo', label: 'PEPS y Empresas Otro Riesgo' },
+  { id: 'pepsNac', label: 'PEPS Nac' },
+  { id: 'bloqueada', label: 'Bloqueada' },
+  { id: 'listaVenc', label: 'Lista VENC' },
+  { id: 'listaNuevaStori', label: 'Lista Nueva Stori' },
+  { id: 'listaPpe', label: 'Lista PPE' },
+  { id: 'listaPepint', label: 'Lista PEPINT' },
+];
 
 export default function ListasBusquedaSystem() {
   const [currentScreen, setCurrentScreen] = useState("search");
@@ -26,6 +45,16 @@ export default function ListasBusquedaSystem() {
   const [selectedRecord, setSelectedRecord] = useState(null);
   const pdfRef = useRef(null);
   const navigate = useNavigate();
+
+  const [showNuevoRegistroModal, setShowNuevoRegistroModal] = useState(false);
+  const [pldForm, setPldForm] = useState({
+    nombreCompleto: '', rfcCurp: '', fechaNacimiento: '',
+    alias: '', fechaListado: '', acuerdo: '', nombreDocumento: '',
+  });
+  const [pldTab, setPldTab] = useState('registro');
+  const [pldListas, setPldListas] = useState(
+    LISTAS_CONFIG.reduce((acc, curr) => ({ ...acc, [curr.id]: false }), {})
+  );
 
   const [historyData, setHistoryData] = useState([
     {
@@ -384,7 +413,7 @@ export default function ListasBusquedaSystem() {
               Exportar
             </button>
             <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2"
-              onClick={() => navigate('/transactional/new')}>
+              onClick={() => { setShowNuevoRegistroModal(true); setPldTab('registro'); }}>
               <FileText className="w-4 h-4" />
               Crear Nuevo Registro
             </button>
@@ -933,6 +962,36 @@ export default function ListasBusquedaSystem() {
           </div>
         </div>
       )}
+
+      {showNuevoRegistroModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+
+            {/* Header */}
+            <div className="bg-gradient-to-r from-purple-600 to-purple-800 px-6 py-5 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <FileText className="w-6 h-6 text-white" />
+                <h2 className="text-xl font-bold text-white">Nuevo Registro PLD</h2>
+              </div>
+              <button onClick={() => setShowNuevoRegistroModal(false)}
+                className="text-white hover:bg-white/20 rounded-full p-2 transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <PLDScreens />
+
+            {/* Footer */}
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
+              <button onClick={() => setShowNuevoRegistroModal(false)}
+                className="px-5 py-2.5 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </>
   );
 }

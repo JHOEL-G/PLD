@@ -1,0 +1,25 @@
+import { Route, Routes } from "react-router-dom";
+import SidebarLayout from "../components/layout/Sidebar/SidebarLayout";
+import DashboardPage from "../pages/Dashboard/DashboardPage";
+import AgregarBuzonDenuncia from "../features/buzonDenuncias/components/AgregarBuzonDenuncia";
+import BuzonDenunciasPage from "../pages/BuzonDenuncias/BuzonDenunciasPage";
+import ListarOperacionCliente from "../features/operaciones/components/ListarOperacionCliente";
+import AgregarOperacionCliente from "../features/operaciones/components/AgregarOperacionCliente";
+import GestionAlertasPage from "../pages/GestionAlertas/GestionAlertasPage";
+import PerfilTransaccionalPage from "../pages/PerfilTransaccional/PerfilTransaccionalPage";
+
+export default function RutasPage() {
+    return (
+        <Routes>
+            <Route element={<SidebarLayout />}>
+                <Route path="/" element={<DashboardPage />} />
+                <Route path="/listar" element={<BuzonDenunciasPage />} />
+                <Route path="agregar" element={<AgregarBuzonDenuncia />} />
+                <Route path="/lista" element={<ListarOperacionCliente />} />
+                <Route path="/agregar-cliente" element={<AgregarOperacionCliente />} />
+                <Route path="/gestion-alertas" element={<GestionAlertasPage />} />
+                <Route path="/perfil-transaccional" element={<PerfilTransaccionalPage />} />
+            </Route>
+        </Routes>
+    )
+}

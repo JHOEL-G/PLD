@@ -1,0 +1,184 @@
+/*@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap'); */
+
+@layer base {
+    :root {
+        /* Shadcn */
+        --background: 220 33% 98%;
+        --foreground: 222 47% 11%;
+
+        --card: 0 0% 100%;
+        --card-foreground: 222 47% 11%;
+
+        --popover: 0 0% 100%;
+        --popover-foreground: 222 47% 11%;
+
+        --primary: 221 83% 53%;
+        --primary-foreground: 0 0% 100%;
+
+        --secondary: 220 14% 96%;
+        --secondary-foreground: 222 47% 11%;
+
+        --muted: 220 14% 96%;
+        --muted-foreground: 215 16% 47%;
+
+        --accent: 250 95% 97%;
+        --accent-foreground: 251 91% 60%;
+
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 100%;
+
+        --border: 220 13% 91%;
+        --input: 220 13% 91%;
+        --ring: 221 83% 53%;
+
+        /* Charts */
+        --chart-1: 221 83% 53%;
+        --chart-2: 262 83% 58%;
+        --chart-3: 160 84% 39%;
+        --chart-4: 38 92% 50%;
+        --chart-5: 347 77% 50%;
+
+        --radius: .75rem;
+
+        /* Sidebar */
+        --sidebar-background: 0 0% 100%;
+        --sidebar-foreground: 222 47% 11%;
+        --sidebar-primary: 221 83% 53%;
+        --sidebar-primary-foreground: 0 0% 100%;
+        --sidebar-accent: 220 14% 96%;
+        --sidebar-accent-foreground: 222 47% 11%;
+        --sidebar-border: 220 13% 91%;
+        --sidebar-ring: 221 83% 53%;
+
+        /* Marca */
+
+        --acrecer-blue: #2563eb;
+        --acrecer-purple: #7c3aed;
+        --acrecer-magenta: #9333ea;
+        --acrecer-coral: #4f46e5;
+
+        --acrecer-white: #ffffff;
+        --acrecer-black: #0f172a;
+        --acrecer-gray: #64748b;
+
+        /* Layout */
+
+        --bg-main: #f8fafc;
+        --bg-card: #ffffff;
+
+        --sidebar-color: #ffffff;
+
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+
+        --border-color: #e2e8f0;
+
+        --bg-overlay: rgba(255, 255, 255, .85);
+    }
+
+    .dark {
+
+        --background: 222 47% 7%;
+        --foreground: 210 40% 98%;
+
+        --card: 222 47% 10%;
+        --card-foreground: 210 40% 98%;
+
+        --popover: 222 47% 10%;
+        --popover-foreground: 210 40% 98%;
+
+        --primary: 217 91% 60%;
+        --primary-foreground: 0 0% 100%;
+
+        --secondary: 217 33% 17%;
+        --secondary-foreground: 210 40% 98%;
+
+        --muted: 217 33% 17%;
+        --muted-foreground: 215 20% 65%;
+
+        --accent: 217 33% 17%;
+        --accent-foreground: 210 40% 98%;
+
+        --destructive: 0 63% 45%;
+        --destructive-foreground: 210 40% 98%;
+
+        --border: 217 33% 17%;
+        --input: 217 33% 17%;
+        --ring: 217 91% 60%;
+
+        /* Charts */
+
+        --chart-1: 217 91% 60%;
+        --chart-2: 262 83% 70%;
+        --chart-3: 160 70% 45%;
+        --chart-4: 38 90% 60%;
+        --chart-5: 347 75% 60%;
+
+        /* Sidebar */
+
+        --sidebar-background: 222 47% 9%;
+        --sidebar-foreground: 210 40% 98%;
+        --sidebar-primary: 217 91% 60%;
+        --sidebar-primary-foreground: 0 0% 100%;
+        --sidebar-accent: 217 33% 15%;
+        --sidebar-accent-foreground: 210 40% 98%;
+        --sidebar-border: 217 33% 17%;
+        --sidebar-ring: 217 91% 60%;
+
+        /* Marca */
+
+        --acrecer-blue: #3b82f6;
+        --acrecer-purple: #8b5cf6;
+        --acrecer-magenta: #a855f7;
+        --acrecer-coral: #6366f1;
+
+        --acrecer-white: #f8fafc;
+        --acrecer-black: #020617;
+        --acrecer-gray: #94a3b8;
+    }
+}
+
+[data-theme="dark"] {
+
+    --bg-main: #020617;
+    --bg-card: #0f172a;
+
+    --sidebar-color: #111827;
+
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+
+    --border-color: rgba(71, 85, 105, .45);
+
+    --bg-overlay: rgba(2, 6, 23, .85);
+
+    --acrecer-blue: #3b82f6;
+    --acrecer-purple: #8b5cf6;
+    --acrecer-magenta: #a855f7;
+    --acrecer-coral: #6366f1;
+
+    --acrecer-white: #f8fafc;
+    --acrecer-black: #020617;
+    --acrecer-gray: #94a3b8;
+}
+
+html,
+body,
+#root {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+body {
+    background: var(--bg-main);
+    color: var(--text-main);
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+code,
+pre,
+.mono {
+    font-family: var(--font-mono);
+}

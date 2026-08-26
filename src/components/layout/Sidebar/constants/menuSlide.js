@@ -39,17 +39,13 @@ export const menuSlide = [
         id: 7,
         moduloNombre: "Monitoreo",
         icono: "usuario",
-        modulos: [
-            { id: 1, moduloNombre: "Listar", url: "/empresa" },
-        ]
+        url: "/monitoreo"
     },
     {
         id: 8,
         moduloNombre: "Perfil Cliente",
         icono: "usuario",
-        modulos: [
-            { id: 1, moduloNombre: "Listar", url: "/empresa" },
-        ]
+        url: "/perfil-cliente"
     },
     {
         id: 9,
@@ -63,8 +59,6 @@ export const menuSlide = [
         id: 10,
         moduloNombre: "Configuración",
         icono: "usuario",
-        modulos: [
-            { id: 1, moduloNombre: "Listar", url: "/empresa" },
-        ]
+        url: "/configuracion"
     }
 ];

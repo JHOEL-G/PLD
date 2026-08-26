@@ -1,4 +1,4 @@
-import { apiPlataformaPld } from "../../../services/apiPlataformaPld";
+import { apiPlataformaPld } from "../../../api/apiPlataformaPld";
 
 export const serviceOperaciones = {
     getOperacionCliente: async () => (await apiPlataformaPld.get('/OperacionesCliente/Listar')).data,

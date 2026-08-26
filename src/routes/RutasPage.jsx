@@ -7,6 +7,9 @@ import ListarOperacionCliente from "../features/operaciones/components/ListarOpe
 import AgregarOperacionCliente from "../features/operaciones/components/AgregarOperacionCliente";
 import GestionAlertasPage from "../pages/GestionAlertas/GestionAlertasPage";
 import PerfilTransaccionalPage from "../pages/PerfilTransaccional/PerfilTransaccionalPage";
+import MonitoreoPage from "../pages/Monitoreo/MonitoreoPage";
+import PerfilClientePage from "../pages/PerfilCliente/PerfilClientePage";
+import SettingsPage from "../pages/Settings/SettingsPage";
 
 export default function RutasPage() {
     return (
@@ -19,6 +22,9 @@ export default function RutasPage() {
                 <Route path="/agregar-cliente" element={<AgregarOperacionCliente />} />
                 <Route path="/gestion-alertas" element={<GestionAlertasPage />} />
                 <Route path="/perfil-transaccional" element={<PerfilTransaccionalPage />} />
+                <Route path="/monitoreo" element={<MonitoreoPage />} />
+                <Route path="/perfil-cliente" element={<PerfilClientePage />} />
+                <Route path="/configuracion" element={<SettingsPage />} />
             </Route>
         </Routes>
     )

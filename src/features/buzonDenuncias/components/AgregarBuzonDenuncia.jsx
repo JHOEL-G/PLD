@@ -12,10 +12,11 @@ import { Send } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import { Eye } from "lucide-react";
 import { EyeOff } from "lucide-react";
+import { useListarCatalogoReporteUno } from "../../../hooks/useListarCatalogoReporteUno";
 
 export default function AgregarBuzonDenuncia({ onDenunciaEnviada }) {
     const { prioridades, tiposDenuncia, empresas, monedas, isLoading: catalogosLoading } = useCatalogosGlobales();
-
+    const { reporte, isLoading: catalogoReporteUno } = useListarCatalogoReporteUno();
     const [step, setStep] = useState(1);
     const [submitted, setSubmitted] = useState(false);
     const [folio, setFolio] = useState("");
@@ -68,8 +69,6 @@ export default function AgregarBuzonDenuncia({ onDenunciaEnviada }) {
         if (valid) setStep((s) => s + 1);
     };
 
-    // TODO: reemplazar por la urlArchivo real cuando exista el upload a storage.
-    // Por ahora solo se registra la metadata del archivo con una URL simulada.
     const subirArchivos = async (idDenuncia) => {
         for (const file of uploadedFiles) {
             await agregarArchivo.mutateAsync({

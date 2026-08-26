@@ -11,49 +11,14 @@ import {
 } from 'lucide-react';
 import { useAgregarOperacionClienteArchivo } from "../hooks/useAgregarOperacionClienteArchivo";
 import { useAgregarOperacionCliente } from "../hooks/useAgregarOperacionCliente";
-
-const CATALOGOS = {
-    tipoPersona: [
-        { id: 1, nombre: 'Persona Física' },
-        { id: 2, nombre: 'Persona Moral' }
-    ],
-    nivelRiesgo: [
-        { id: 1, nombre: 'Bajo' },
-        { id: 2, nombre: 'Medio' },
-        { id: 3, nombre: 'Alto' }
-    ],
-    nacionalidad: [
-        { id: 1, nombre: 'Mexicana' },
-        { id: 2, nombre: 'Estadounidense' },
-        { id: 3, nombre: 'Canadiense' },
-        { id: 4, nombre: 'Otra' }
-    ],
-    actividadEconomica: [
-        { id: 1, nombre: 'Comercio' },
-        { id: 2, nombre: 'Servicios' },
-        { id: 3, nombre: 'Construcción' },
-        { id: 4, nombre: 'Manufactura' },
-        { id: 5, nombre: 'Tecnología' },
-        { id: 6, nombre: 'Otra' }
-    ],
-    tipoIdentificador: [
-        { id: 1, nombre: 'INE / IFE' },
-        { id: 2, nombre: 'Pasaporte' },
-        { id: 3, nombre: 'Licencia de Conducir' },
-        { id: 4, nombre: 'Cédula Profesional' }
-    ],
-    montoOperacionesMensuales: [
-        { id: 1, nombre: 'Menor a $100,000' },
-        { id: 2, nombre: '$100,000 - $500,000' },
-        { id: 3, nombre: '$500,000 - $1,000,000' },
-        { id: 4, nombre: 'Mayor a $1,000,000' }
-    ],
-    operaEnEfectivo: [
-        { id: 1, nombre: 'Sí, frecuentemente' },
-        { id: 2, nombre: 'Ocasionalmente' },
-        { id: 3, nombre: 'No' }
-    ]
-};
+import { useCatalogoTipoPersona } from "../../../hooks/useCatalogoTipoPersona";
+import { useCatalogoNivelRiesgo } from "../../../hooks/useCatalogoNivelRiesgo";
+import { useCatalogoNacionalidad } from "../../../hooks/useCatalogoNacionalidad";
+import { useCatalogoActividadEconomica } from "../../../hooks/useCatalogoActividadEconomica";
+import { useCatalogoTipoIdentificador } from "../../../hooks/useCatalogoTipoIdentificador";
+import { useCatalogoRangoOperacionMensual } from "../../../hooks/useCatalogoRangoOperacionMensual";
+import { useCatalogoTipoOperacionEfectivo } from "../../../hooks/useCatalogoTipoOperacionEfectivo";
+import { useMemo } from "react";
 
 const TIPOS_DOCUMENTO = [
     { tipoDocumentoId: 1, label: 'Comprobante de domicilio', requerido: true },
@@ -88,22 +53,60 @@ const initialFormData = {
     operaEnEfectivoId: ''
 };
 
-// Convierte un <input type="date"> (yyyy-mm-dd) al formato ISO datetime que espera la API.
 const toIsoDateTime = (dateStr) => {
     if (!dateStr) return null;
     return new Date(`${dateStr}T00:00:00`).toISOString();
 };
 
+const mapCatalogo = (query) => (query.data?.data ?? []).map((item) => ({
+    id: item.id,
+    nombre: item.descripcion,
+}));
 
 export default function AgregarOperacionCliente() {
     const [currentStep, setCurrentStep] = useState(1);
     const [formData, setFormData] = useState(initialFormData);
     const [operacionId, setOperacionId] = useState(null);
-    const [documentFiles, setDocumentFiles] = useState({}); // { [tipoDocumentoId]: File }
-    const [uploadedDocs, setUploadedDocs] = useState({}); // { [tipoDocumentoId]: true }
+    const [documentFiles, setDocumentFiles] = useState({});
+    const [uploadedDocs, setUploadedDocs] = useState({});
 
     const agregarOperacion = useAgregarOperacionCliente();
     const agregarArchivo = useAgregarOperacionClienteArchivo();
+
+    const qTipoPersona = useCatalogoTipoPersona();
+    const qNivelRiesgo = useCatalogoNivelRiesgo();
+    const qNacionalidad = useCatalogoNacionalidad();
+    const qActividadEconomica = useCatalogoActividadEconomica();
+    const qTipoIdentificador = useCatalogoTipoIdentificador();
+    const qMontoOperacionesMensuales = useCatalogoRangoOperacionMensual();
+    const qOperaEnEfectivo = useCatalogoTipoOperacionEfectivo();
+
+    const catalogosLoading =
+        qTipoPersona.isLoading ||
+        qNivelRiesgo.isLoading ||
+        qNacionalidad.isLoading ||
+        qActividadEconomica.isLoading ||
+        qTipoIdentificador.isLoading ||
+        qMontoOperacionesMensuales.isLoading ||
+        qOperaEnEfectivo.isLoading;
+
+    const CATALOGOS = useMemo(() => ({
+        tipoPersona: mapCatalogo(qTipoPersona),
+        nivelRiesgo: mapCatalogo(qNivelRiesgo),
+        nacionalidad: mapCatalogo(qNacionalidad),
+        actividadEconomica: mapCatalogo(qActividadEconomica),
+        tipoIdentificador: mapCatalogo(qTipoIdentificador),
+        montoOperacionesMensuales: mapCatalogo(qMontoOperacionesMensuales),
+        operaEnEfectivo: mapCatalogo(qOperaEnEfectivo),
+    }), [
+        qTipoPersona.data,
+        qNivelRiesgo.data,
+        qNacionalidad.data,
+        qActividadEconomica.data,
+        qTipoIdentificador.data,
+        qMontoOperacionesMensuales.data,
+        qOperaEnEfectivo.data,
+    ]);
 
     const handleInputChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
@@ -144,7 +147,6 @@ export default function AgregarOperacionCliente() {
 
         agregarOperacion.mutate(payload, {
             onSuccess: (data) => {
-                // Ajusta esta clave al nombre real que devuelva tu API (idOperacion, id, operacionId...)
                 setOperacionId(data?.operacionId ?? data?.idOperacion ?? data?.id ?? null);
                 setCurrentStep(4);
             }
@@ -159,9 +161,6 @@ export default function AgregarOperacionCliente() {
         const file = documentFiles[tipoDocumentoId];
         if (!file || !operacionId) return;
 
-        // TODO: aquí primero deberías subir el archivo (bytes) a tu storage
-        // (S3 / Blob / etc.) y obtener la urlArchivo real antes de registrar el metadato.
-        // De momento se envía el nombre como placeholder de urlArchivo.
         agregarArchivo.mutate({
             operacionId,
             tipoDocumentoId,
@@ -234,256 +233,265 @@ export default function AgregarOperacionCliente() {
             <div className="max-w-4xl mx-auto px-6 py-8 pb-32">
                 <div className="bg-white rounded-2xl border border-[#E4E0D6] p-8">
 
-                    {/* Paso 1: Datos generales */}
-                    {currentStep === 1 && (
-                        <div className="space-y-5">
-                            <h3 className="font-display text-lg font-semibold text-[#14213D] mb-1">Datos generales</h3>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div>
-                                    <label className="block text-sm font-semibold text-[#14213D] mb-2">
-                                        Tipo de persona <span className="text-[#9A2A20]">*</span>
-                                    </label>
-                                    <select
-                                        value={formData.tipoPersonaId}
-                                        onChange={(e) => handleInputChange('tipoPersonaId', e.target.value)}
-                                        className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
-                                    >
-                                        <option value="">Seleccione...</option>
-                                        {CATALOGOS.tipoPersona.map(o => <option key={o.id} value={o.id}>{o.nombre}</option>)}
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-semibold text-[#14213D] mb-2">
-                                        RFC <span className="text-[#9A2A20]">*</span>
-                                    </label>
-                                    <input
-                                        type="text"
-                                        placeholder="XAXX010101000"
-                                        value={formData.rfc}
-                                        onChange={(e) => handleInputChange('rfc', e.target.value)}
-                                        className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-semibold text-[#14213D] mb-2">
-                                    Nombre completo <span className="text-[#9A2A20]">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    value={formData.nombreCompleto}
-                                    onChange={(e) => handleInputChange('nombreCompleto', e.target.value)}
-                                    className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div>
-                                    <label className="block text-sm font-semibold text-[#14213D] mb-2">
-                                        Fecha de nacimiento <span className="text-[#9A2A20]">*</span>
-                                    </label>
-                                    <input
-                                        type="date"
-                                        value={formData.fechaNacimiento}
-                                        onChange={(e) => handleInputChange('fechaNacimiento', e.target.value)}
-                                        className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-semibold text-[#14213D] mb-2">CURP</label>
-                                    <input
-                                        type="text"
-                                        value={formData.curp}
-                                        onChange={(e) => handleInputChange('curp', e.target.value)}
-                                        className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div>
-                                    <label className="block text-sm font-semibold text-[#14213D] mb-2">
-                                        Nivel de riesgo <span className="text-[#9A2A20]">*</span>
-                                    </label>
-                                    <select
-                                        value={formData.nivelRiesgoId}
-                                        onChange={(e) => handleInputChange('nivelRiesgoId', e.target.value)}
-                                        className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
-                                    >
-                                        <option value="">Seleccione...</option>
-                                        {CATALOGOS.nivelRiesgo.map(o => <option key={o.id} value={o.id}>{o.nombre}</option>)}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-semibold text-[#14213D] mb-2">
-                                        Nacionalidad <span className="text-[#9A2A20]">*</span>
-                                    </label>
-                                    <select
-                                        value={formData.nacionalidadId}
-                                        onChange={(e) => handleInputChange('nacionalidadId', e.target.value)}
-                                        className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
-                                    >
-                                        <option value="">Seleccione...</option>
-                                        {CATALOGOS.nacionalidad.map(o => <option key={o.id} value={o.id}>{o.nombre}</option>)}
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-semibold text-[#14213D] mb-2">
-                                    Actividad económica <span className="text-[#9A2A20]">*</span>
-                                </label>
-                                <select
-                                    value={formData.actividadEconomicaId}
-                                    onChange={(e) => handleInputChange('actividadEconomicaId', e.target.value)}
-                                    className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
-                                >
-                                    <option value="">Seleccione...</option>
-                                    {CATALOGOS.actividadEconomica.map(o => <option key={o.id} value={o.id}>{o.nombre}</option>)}
-                                </select>
-                            </div>
-
-                            <div className="bg-[#E7EDFB] border border-[#C9D8F4] rounded-xl p-4 flex gap-3">
-                                <Info className="w-5 h-5 text-[#25438B] shrink-0 mt-0.5" />
-                                <p className="text-sm text-[#25438B]">
-                                    Los campos marcados con <span className="font-semibold">*</span> son obligatorios para continuar.
-                                </p>
-                            </div>
+                    {catalogosLoading && currentStep < 4 ? (
+                        <div className="py-10 text-center text-[#A7A08A] text-sm flex items-center justify-center gap-2">
+                            <Loader className="w-4 h-4 animate-spin" />
+                            Cargando catálogos...
                         </div>
-                    )}
+                    ) : (
+                        <>
+                            {/* Paso 1: Datos generales */}
+                            {currentStep === 1 && (
+                                <div className="space-y-5">
+                                    <h3 className="font-display text-lg font-semibold text-[#14213D] mb-1">Datos generales</h3>
 
-                    {/* Paso 2: Identificación */}
-                    {currentStep === 2 && (
-                        <div className="space-y-5">
-                            <h3 className="font-display text-lg font-semibold text-[#14213D] mb-1">Identificación oficial</h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                        <div>
+                                            <label className="block text-sm font-semibold text-[#14213D] mb-2">
+                                                Tipo de persona <span className="text-[#9A2A20]">*</span>
+                                            </label>
+                                            <select
+                                                value={formData.tipoPersonaId}
+                                                onChange={(e) => handleInputChange('tipoPersonaId', e.target.value)}
+                                                className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
+                                            >
+                                                <option value="">Seleccione...</option>
+                                                {CATALOGOS.tipoPersona.map(o => <option key={o.id} value={o.id}>{o.nombre}</option>)}
+                                            </select>
+                                        </div>
 
-                            <div>
-                                <label className="block text-sm font-semibold text-[#14213D] mb-2">
-                                    Tipo de identificación <span className="text-[#9A2A20]">*</span>
-                                </label>
-                                <select
-                                    value={formData.tipoIdentificadorId}
-                                    onChange={(e) => handleInputChange('tipoIdentificadorId', e.target.value)}
-                                    className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
-                                >
-                                    <option value="">Seleccione...</option>
-                                    {CATALOGOS.tipoIdentificador.map(o => <option key={o.id} value={o.id}>{o.nombre}</option>)}
-                                </select>
-                            </div>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div>
-                                    <label className="block text-sm font-semibold text-[#14213D] mb-2">
-                                        Número de identificación <span className="text-[#9A2A20]">*</span>
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={formData.numeroIdentificador}
-                                        onChange={(e) => handleInputChange('numeroIdentificador', e.target.value)}
-                                        className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-semibold text-[#14213D] mb-2">
-                                        Vigencia <span className="text-[#9A2A20]">*</span>
-                                    </label>
-                                    <input
-                                        type="date"
-                                        value={formData.vigencia}
-                                        onChange={(e) => handleInputChange('vigencia', e.target.value)}
-                                        className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Paso 3: Cuestionario */}
-                    {currentStep === 3 && (
-                        <div className="space-y-7">
-                            <h3 className="font-display text-lg font-semibold text-[#14213D] mb-1">Cuestionario de riesgo</h3>
-
-                            <div>
-                                <label className="block text-sm font-semibold text-[#14213D] mb-3">
-                                    1. ¿Es persona políticamente expuesta (PEP)?
-                                </label>
-                                <div className="flex gap-6">
-                                    <label className="flex items-center gap-2.5 cursor-pointer">
-                                        <input type="radio" checked={formData.esPep === true} onChange={() => handleInputChange('esPep', true)} className="w-4 h-4 accent-[#14213D]" />
-                                        <span className="text-sm text-[#1F2130]">Sí</span>
-                                    </label>
-                                    <label className="flex items-center gap-2.5 cursor-pointer">
-                                        <input type="radio" checked={formData.esPep === false} onChange={() => handleInputChange('esPep', false)} className="w-4 h-4 accent-[#14213D]" />
-                                        <span className="text-sm text-[#1F2130]">No</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-semibold text-[#14213D] mb-3">
-                                    2. Monto aproximado de operaciones mensuales
-                                </label>
-                                <select
-                                    value={formData.montoOperacionesMensualesId}
-                                    onChange={(e) => handleInputChange('montoOperacionesMensualesId', e.target.value)}
-                                    className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
-                                >
-                                    <option value="">Seleccione...</option>
-                                    {CATALOGOS.montoOperacionesMensuales.map(o => <option key={o.id} value={o.id}>{o.nombre}</option>)}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-semibold text-[#14213D] mb-3">
-                                    3. Origen de los recursos
-                                </label>
-                                <textarea
-                                    placeholder="Describa el origen..."
-                                    value={formData.origenRecursos}
-                                    onChange={(e) => handleInputChange('origenRecursos', e.target.value)}
-                                    rows={3}
-                                    className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm resize-none"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-semibold text-[#14213D] mb-3">
-                                    4. ¿Realiza operaciones en efectivo?
-                                </label>
-                                <div className="space-y-2">
-                                    {CATALOGOS.operaEnEfectivo.map(o => (
-                                        <label key={o.id} className="flex items-center gap-2.5 cursor-pointer">
+                                        <div>
+                                            <label className="block text-sm font-semibold text-[#14213D] mb-2">
+                                                RFC <span className="text-[#9A2A20]">*</span>
+                                            </label>
                                             <input
-                                                type="radio"
-                                                checked={String(formData.operaEnEfectivoId) === String(o.id)}
-                                                onChange={() => handleInputChange('operaEnEfectivoId', o.id)}
-                                                className="w-4 h-4 accent-[#14213D]"
+                                                type="text"
+                                                placeholder="XAXX010101000"
+                                                value={formData.rfc}
+                                                onChange={(e) => handleInputChange('rfc', e.target.value)}
+                                                className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
                                             />
-                                            <span className="text-sm text-[#1F2130]">{o.nombre}</span>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold text-[#14213D] mb-2">
+                                            Nombre completo <span className="text-[#9A2A20]">*</span>
                                         </label>
-                                    ))}
-                                </div>
-                            </div>
+                                        <input
+                                            type="text"
+                                            value={formData.nombreCompleto}
+                                            onChange={(e) => handleInputChange('nombreCompleto', e.target.value)}
+                                            className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
+                                        />
+                                    </div>
 
-                            <div className="bg-[#FBF3DB] border border-[#EDDBA0] rounded-xl p-4 flex gap-3">
-                                <Info className="w-5 h-5 text-[#8A6D00] shrink-0 mt-0.5" />
-                                <p className="text-sm text-[#8A6D00]">
-                                    El sistema calculará automáticamente el nivel de riesgo con base en estas respuestas.
-                                </p>
-                            </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                        <div>
+                                            <label className="block text-sm font-semibold text-[#14213D] mb-2">
+                                                Fecha de nacimiento <span className="text-[#9A2A20]">*</span>
+                                            </label>
+                                            <input
+                                                type="date"
+                                                value={formData.fechaNacimiento}
+                                                onChange={(e) => handleInputChange('fechaNacimiento', e.target.value)}
+                                                className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-semibold text-[#14213D] mb-2">CURP</label>
+                                            <input
+                                                type="text"
+                                                value={formData.curp}
+                                                onChange={(e) => handleInputChange('curp', e.target.value)}
+                                                className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
+                                            />
+                                        </div>
+                                    </div>
 
-                            {agregarOperacion.isError && (
-                                <div className="bg-[#FBE7E5] border border-[#F0C6C1] rounded-xl p-4 flex gap-3">
-                                    <AlertCircle className="w-5 h-5 text-[#9A2A20] shrink-0 mt-0.5" />
-                                    <p className="text-sm text-[#9A2A20]">
-                                        {agregarOperacion.error?.message || 'No se pudo guardar el cliente. Intenta de nuevo.'}
-                                    </p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                        <div>
+                                            <label className="block text-sm font-semibold text-[#14213D] mb-2">
+                                                Nivel de riesgo <span className="text-[#9A2A20]">*</span>
+                                            </label>
+                                            <select
+                                                value={formData.nivelRiesgoId}
+                                                onChange={(e) => handleInputChange('nivelRiesgoId', e.target.value)}
+                                                className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
+                                            >
+                                                <option value="">Seleccione...</option>
+                                                {CATALOGOS.nivelRiesgo.map(o => <option key={o.id} value={o.id}>{o.nombre}</option>)}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-semibold text-[#14213D] mb-2">
+                                                Nacionalidad <span className="text-[#9A2A20]">*</span>
+                                            </label>
+                                            <select
+                                                value={formData.nacionalidadId}
+                                                onChange={(e) => handleInputChange('nacionalidadId', e.target.value)}
+                                                className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
+                                            >
+                                                <option value="">Seleccione...</option>
+                                                {CATALOGOS.nacionalidad.map(o => <option key={o.id} value={o.id}>{o.nombre}</option>)}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold text-[#14213D] mb-2">
+                                            Actividad económica <span className="text-[#9A2A20]">*</span>
+                                        </label>
+                                        <select
+                                            value={formData.actividadEconomicaId}
+                                            onChange={(e) => handleInputChange('actividadEconomicaId', e.target.value)}
+                                            className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
+                                        >
+                                            <option value="">Seleccione...</option>
+                                            {CATALOGOS.actividadEconomica.map(o => <option key={o.id} value={o.id}>{o.nombre}</option>)}
+                                        </select>
+                                    </div>
+
+                                    <div className="bg-[#E7EDFB] border border-[#C9D8F4] rounded-xl p-4 flex gap-3">
+                                        <Info className="w-5 h-5 text-[#25438B] shrink-0 mt-0.5" />
+                                        <p className="text-sm text-[#25438B]">
+                                            Los campos marcados con <span className="font-semibold">*</span> son obligatorios para continuar.
+                                        </p>
+                                    </div>
                                 </div>
                             )}
-                        </div>
+
+                            {/* Paso 2: Identificación */}
+                            {currentStep === 2 && (
+                                <div className="space-y-5">
+                                    <h3 className="font-display text-lg font-semibold text-[#14213D] mb-1">Identificación oficial</h3>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold text-[#14213D] mb-2">
+                                            Tipo de identificación <span className="text-[#9A2A20]">*</span>
+                                        </label>
+                                        <select
+                                            value={formData.tipoIdentificadorId}
+                                            onChange={(e) => handleInputChange('tipoIdentificadorId', e.target.value)}
+                                            className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
+                                        >
+                                            <option value="">Seleccione...</option>
+                                            {CATALOGOS.tipoIdentificador.map(o => <option key={o.id} value={o.id}>{o.nombre}</option>)}
+                                        </select>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                        <div>
+                                            <label className="block text-sm font-semibold text-[#14213D] mb-2">
+                                                Número de identificación <span className="text-[#9A2A20]">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={formData.numeroIdentificador}
+                                                onChange={(e) => handleInputChange('numeroIdentificador', e.target.value)}
+                                                className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-semibold text-[#14213D] mb-2">
+                                                Vigencia <span className="text-[#9A2A20]">*</span>
+                                            </label>
+                                            <input
+                                                type="date"
+                                                value={formData.vigencia}
+                                                onChange={(e) => handleInputChange('vigencia', e.target.value)}
+                                                className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Paso 3: Cuestionario */}
+                            {currentStep === 3 && (
+                                <div className="space-y-7">
+                                    <h3 className="font-display text-lg font-semibold text-[#14213D] mb-1">Cuestionario de riesgo</h3>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold text-[#14213D] mb-3">
+                                            1. ¿Es persona políticamente expuesta (PEP)?
+                                        </label>
+                                        <div className="flex gap-6">
+                                            <label className="flex items-center gap-2.5 cursor-pointer">
+                                                <input type="radio" checked={formData.esPep === true} onChange={() => handleInputChange('esPep', true)} className="w-4 h-4 accent-[#14213D]" />
+                                                <span className="text-sm text-[#1F2130]">Sí</span>
+                                            </label>
+                                            <label className="flex items-center gap-2.5 cursor-pointer">
+                                                <input type="radio" checked={formData.esPep === false} onChange={() => handleInputChange('esPep', false)} className="w-4 h-4 accent-[#14213D]" />
+                                                <span className="text-sm text-[#1F2130]">No</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold text-[#14213D] mb-3">
+                                            2. Monto aproximado de operaciones mensuales
+                                        </label>
+                                        <select
+                                            value={formData.montoOperacionesMensualesId}
+                                            onChange={(e) => handleInputChange('montoOperacionesMensualesId', e.target.value)}
+                                            className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm"
+                                        >
+                                            <option value="">Seleccione...</option>
+                                            {CATALOGOS.montoOperacionesMensuales.map(o => <option key={o.id} value={o.id}>{o.nombre}</option>)}
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold text-[#14213D] mb-3">
+                                            3. Origen de los recursos
+                                        </label>
+                                        <textarea
+                                            placeholder="Describa el origen..."
+                                            value={formData.origenRecursos}
+                                            onChange={(e) => handleInputChange('origenRecursos', e.target.value)}
+                                            rows={3}
+                                            className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm resize-none"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold text-[#14213D] mb-3">
+                                            4. ¿Realiza operaciones en efectivo?
+                                        </label>
+                                        <div className="space-y-2">
+                                            {CATALOGOS.operaEnEfectivo.map(o => (
+                                                <label key={o.id} className="flex items-center gap-2.5 cursor-pointer">
+                                                    <input
+                                                        type="radio"
+                                                        checked={String(formData.operaEnEfectivoId) === String(o.id)}
+                                                        onChange={() => handleInputChange('operaEnEfectivoId', o.id)}
+                                                        className="w-4 h-4 accent-[#14213D]"
+                                                    />
+                                                    <span className="text-sm text-[#1F2130]">{o.nombre}</span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-[#FBF3DB] border border-[#EDDBA0] rounded-xl p-4 flex gap-3">
+                                        <Info className="w-5 h-5 text-[#8A6D00] shrink-0 mt-0.5" />
+                                        <p className="text-sm text-[#8A6D00]">
+                                            El sistema calculará automáticamente el nivel de riesgo con base en estas respuestas.
+                                        </p>
+                                    </div>
+
+                                    {agregarOperacion.isError && (
+                                        <div className="bg-[#FBE7E5] border border-[#F0C6C1] rounded-xl p-4 flex gap-3">
+                                            <AlertCircle className="w-5 h-5 text-[#9A2A20] shrink-0 mt-0.5" />
+                                            <p className="text-sm text-[#9A2A20]">
+                                                {agregarOperacion.error?.message || 'No se pudo guardar el cliente. Intenta de nuevo.'}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </>
                     )}
 
                     {/* Paso 4: Documentos */}

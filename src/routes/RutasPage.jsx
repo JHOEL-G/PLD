@@ -11,6 +11,7 @@ import PerfilClientePage from "../pages/PerfilCliente/PerfilClientePage";
 import SettingsPage from "../pages/Settings/SettingsPage";
 import OperacionPage from "../pages/Operacion/OperacionPage";
 import ListasBusquedaPage from "../pages/ListasBusqueda/ListasBusquedaPage";
+import ClienteDetallePage from "../pages/ClienteDetalle/ClienteDetallePage";
 
 export default function RutasPage() {
     return (
@@ -27,6 +28,7 @@ export default function RutasPage() {
                 <Route path="/perfil-cliente" element={<PerfilClientePage />} />
                 <Route path="/configuracion" element={<SettingsPage />} />
                 <Route path="/consulta-listas" element={<ListasBusquedaPage />} />
+                <Route path="/cliente" element={<ClienteDetallePage />} />
             </Route>
         </Routes>
     )

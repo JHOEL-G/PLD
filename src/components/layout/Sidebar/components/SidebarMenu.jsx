@@ -2,20 +2,19 @@ import SidebarItem from "./SidebarItem";
 
 export default function SidebarMenu({ modules, expanded, darkMode }) {
     return (
-        <>
-            {expanded && (
-                <div className="px-4 mb-2 flex items-center gap-1.5">
-                    <span
-                        className="w-1 h-3 rounded-full"
-                        style={{ background: `linear-gradient(180deg, var(--acrecer-purple), var(--acrecer-blue))` }}
-                    />
-                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                        Menú Principal
-                    </span>
-                </div>
-            )}
+        <div className="flex-1 min-h-0 flex flex-col">
+            <div className={`px-4 mb-2 flex items-center gap-2 transition-opacity duration-300 ${expanded ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                }`}>
+                <span
+                    className="w-1 h-3 rounded-full"
+                    style={{ background: `linear-gradient(180deg, var(--acrecer-purple, #8b5cf6), var(--acrecer-blue, #3b82f6))` }}
+                />
+                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 whitespace-nowrap">
+                    Menú Principal
+                </span>
+            </div>
 
-            <nav className="flex-1 min-h-0 px-2.5 overflow-y-auto overflow-x-visible flex flex-col gap-0.5 [&::-webkit-scrollbar]:hidden">
+            <nav className="flex-1 px-2 overflow-y-auto overflow-x-hidden flex flex-col gap-1 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700">
                 {modules.map(module => (
                     <SidebarItem
                         key={module.id}
@@ -26,6 +25,6 @@ export default function SidebarMenu({ modules, expanded, darkMode }) {
                     />
                 ))}
             </nav>
-        </>
+        </div>
     )
 }

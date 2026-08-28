@@ -1,19 +1,39 @@
-import { Rocket } from "lucide-react";
-import { Server } from "lucide-react";
-import { Cog } from "lucide-react";
-import { User } from "lucide-react";
-import { CurlyBraces } from "lucide-react";
-import { Folder } from "lucide-react";
-import { Home } from "lucide-react";
+import {
+    Home,
+    Folder,
+    Rocket,
+    Server,
+    Cog,
+    User,
+    ShieldAlert,
+    Activity,
+    AlertTriangle,
+    ListChecks,
+    BriefcaseBusiness,
+    UserRound,
+    ClipboardCheck,
+    Settings,
+} from "lucide-react";
 
 const iconMap = {
     home: Home,
+    denuncias: ShieldAlert,
+    monitoreo: Activity,
+    riesgos: AlertTriangle,
+    operaciones: BriefcaseBusiness,
+    listas: ListChecks,
+    alertas: AlertTriangle,
+    perfilTransaccional: UserRound,
+    perfilCliente: User,
+    auditoria: ClipboardCheck,
+    config: Settings,
+
+    // Otros que ya tenías
     proyecto: Folder,
     deploy: Rocket,
-    docker: CurlyBraces,
+    docker: Server,
     servidor: Server,
     usuario: User,
-    config: Cog,
 };
 
 export function getIcon(iconName) {

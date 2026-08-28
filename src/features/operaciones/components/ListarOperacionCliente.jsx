@@ -8,6 +8,7 @@ import { AlertTriangle } from "lucide-react";
 import { Users } from "lucide-react";
 import { Search } from "lucide-react";
 import { Outlet, useNavigate } from "react-router-dom";
+import { Plus } from "lucide-react";
 
 const statusConfig = {
     'Completo': { label: 'Completo', icon: CheckCircle, classes: 'bg-[#E4F3F0] text-[#0F6659]' },
@@ -67,73 +68,71 @@ export default function ListarOperacionCliente() {
 
     return (
         <>
-            <div className="min-h-full font-[Inter,sans-serif] text-[#1F2130] bg-[#F7F5F0] pb-12">
-                <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap');
-                .font-display { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
-                .font-mono-tag { font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.04em; }
-            `}</style>
-
-                <div className="max-w-7xl mx-auto p-8">
-                    {/* Header */}
-                    <div className="flex items-center justify-between mb-8">
+            <div className="min-h-screen font-sans text-slate-800 bg-slate-50/50 pb-12">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-[#14213D] rounded-xl flex items-center justify-center shadow-sm">
-                                <Users className="w-6 h-6 text-[#E8C05A]" />
+                            <div className="w-12 h-12 bg-blue-50 border border-blue-100 rounded-xl flex items-center justify-center shadow-sm">
+                                <Users className="w-6 h-6 text-blue-600" />
                             </div>
                             <div>
-                                <h1 className="font-display text-2xl font-semibold text-[#14213D] tracking-tight leading-none">Operaciones</h1>
-                                <p className="text-sm text-[#7A7563] mt-1">Alta y captura de clientes, expedientes y cuestionario de riesgo</p>
+                                <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Operaciones</h1>
+                                <p className="text-sm text-slate-500 mt-0.5">Alta y captura de clientes, expedientes y cuestionario de riesgo</p>
                             </div>
                         </div>
-                        <div className="hidden md:flex items-center text-sm bg-white px-4 py-2 rounded-lg border border-[#E4E0D6]">
-                            <span className="text-[#7A7563] mr-2">Viendo</span>
-                            <span className="font-mono-tag font-semibold text-[#14213D]">{filteredClients.length}</span>
-                            <span className="text-[#C8C2AE] mx-1.5">/</span>
-                            <span className="font-mono-tag text-[#7A7563]">{clients.length}</span>
+
+                        <div className="flex items-center gap-3 self-end md:self-auto">
+                            <div className="hidden sm:flex items-center text-xs font-medium bg-white px-3.5 py-2 rounded-xl border border-slate-200/80 shadow-sm">
+                                <span className="text-slate-500 mr-2">Viendo</span>
+                                <span className="font-semibold text-slate-900">{filteredClients.length}</span>
+                                <span className="text-slate-300 mx-1.5">/</span>
+                                <span className="text-slate-500">{clients.length}</span>
+                            </div>
+
+                            <button
+                                onClick={() => navigate("/agregar-cliente")}
+                                className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2.5 rounded-xl font-medium text-sm shadow-md shadow-blue-500/15 hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5 transition-all duration-200 active:translate-y-0"
+                            >
+                                <Plus className="w-4 h-4" />
+                                Agregar Operación
+                            </button>
                         </div>
-                        <button
-                            onClick={() => navigate("/agregar-cliente")}
-                        >
-                            agregar operacion
-                        </button>
                     </div>
-
-                    {/* Búsqueda y filtros */}
-                    <div className="bg-white rounded-2xl border border-[#E4E0D6] p-6 mb-6">
-                        <div className="mb-4">
-                            <label className="block text-sm font-semibold text-[#14213D] mb-2">Buscar cliente</label>
-                            <div className="relative">
-                                <Search className="w-4 h-4 text-[#A7A08A] absolute left-3.5 top-1/2 -translate-y-1/2" />
-                                <input
-                                    type="text"
-                                    placeholder="Nombre, ID o RFC..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm placeholder-[#A7A08A]"
-                                />
+                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 mb-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                            <div className="lg:col-span-1">
+                                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Buscar cliente</label>
+                                <div className="relative">
+                                    <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                                    <input
+                                        type="text"
+                                        placeholder="Nombre, ID o RFC..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200/80 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                    />
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-semibold text-[#14213D] mb-2">Tipo de persona</label>
+                                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Tipo de persona</label>
                                 <select
                                     value={filterType}
                                     onChange={(e) => setFilterType(e.target.value)}
-                                    className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm cursor-pointer"
+                                    className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200/80 rounded-xl text-sm text-slate-700 font-medium outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer transition-all"
                                 >
                                     <option>Todos</option>
                                     <option>Persona Física</option>
                                     <option>Persona Moral</option>
                                 </select>
                             </div>
+
                             <div>
-                                <label className="block text-sm font-semibold text-[#14213D] mb-2">Estatus</label>
+                                <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Estatus</label>
                                 <select
                                     value={filterStatus}
                                     onChange={(e) => setFilterStatus(e.target.value)}
-                                    className="w-full px-4 py-2.5 bg-[#FAF8F3] border border-[#E4E0D6] rounded-lg focus:ring-2 focus:ring-[#14213D]/15 focus:border-[#14213D] outline-none transition-all text-sm cursor-pointer"
+                                    className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200/80 rounded-xl text-sm text-slate-700 font-medium outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer transition-all"
                                 >
                                     <option>Todos</option>
                                     <option>Completo</option>
@@ -143,64 +142,68 @@ export default function ListarOperacionCliente() {
                             </div>
                         </div>
                     </div>
-
-                    {/* Tabla */}
-                    <div className="bg-white rounded-2xl border border-[#E4E0D6] overflow-hidden">
+                    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
                         {filteredClients.length === 0 ? (
                             <div className="p-16 text-center">
-                                <div className="w-16 h-16 bg-[#FAF8F3] rounded-full flex items-center justify-center mx-auto mb-5">
-                                    <Search className="w-7 h-7 text-[#C8C2AE]" />
+                                <div className="w-16 h-16 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+                                    <Search className="w-6 h-6 text-slate-400" />
                                 </div>
-                                <h3 className="font-display text-lg font-semibold text-[#14213D] mb-1">Sin resultados a la vista</h3>
-                                <p className="text-[#7A7563] max-w-sm mx-auto text-sm">Prueba modificando tus filtros de búsqueda o elimínalos para ampliar los resultados.</p>
+                                <h3 className="text-base font-semibold text-slate-900 mb-1">Sin resultados encontrados</h3>
+                                <p className="text-slate-500 max-w-sm mx-auto text-sm">Prueba modificando tus filtros de búsqueda para ampliar los resultados.</p>
                             </div>
                         ) : (
                             <div className="overflow-x-auto">
-                                <table className="w-full">
+                                <table className="w-full text-left border-collapse">
                                     <thead>
-                                        <tr className="bg-[#FBFAF7] border-b border-[#E4E0D6]">
-                                            <th className="px-6 py-4 text-left text-[11px] font-mono-tag font-semibold text-[#7A7563] uppercase">ID cliente</th>
-                                            <th className="px-6 py-4 text-left text-[11px] font-mono-tag font-semibold text-[#7A7563] uppercase">Nombre / Razón social</th>
-                                            <th className="px-6 py-4 text-left text-[11px] font-mono-tag font-semibold text-[#7A7563] uppercase">Tipo</th>
-                                            <th className="px-6 py-4 text-left text-[11px] font-mono-tag font-semibold text-[#7A7563] uppercase">Fecha alta</th>
-                                            <th className="px-6 py-4 text-left text-[11px] font-mono-tag font-semibold text-[#7A7563] uppercase">Monto</th>
-                                            <th className="px-6 py-4 text-left text-[11px] font-mono-tag font-semibold text-[#7A7563] uppercase">Estatus</th>
-                                            <th className="px-6 py-4 text-left text-[11px] font-mono-tag font-semibold text-[#7A7563] uppercase">Nivel riesgo</th>
+                                        <tr className="bg-slate-50/80 border-b border-slate-200/80 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                                            <th className="px-6 py-3.5">ID cliente</th>
+                                            <th className="px-6 py-3.5">Nombre / Razón social</th>
+                                            <th className="px-6 py-3.5">Tipo</th>
+                                            <th className="px-6 py-3.5">Fecha alta</th>
+                                            <th className="px-6 py-3.5">Monto</th>
+                                            <th className="px-6 py-3.5">Estatus</th>
+                                            <th className="px-6 py-3.5">Nivel riesgo</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-[#EDEAE0]">
+                                    <tbody className="divide-y divide-slate-100">
                                         {filteredClients.map((client) => {
                                             const status = statusConfig[client.nombreEstado] ?? { ...statusFallback, label: client.nombreEstado };
                                             const risk = riskConfig[client.nombreNivelRiesgo] ?? { ...riskFallback, label: client.nombreNivelRiesgo };
                                             const StatusIcon = status.icon;
 
                                             return (
-                                                <tr key={client.idCliente} className="hover:bg-[#FAF8F3] transition-colors">
+                                                <tr key={client.idCliente} className="hover:bg-slate-50/70 transition-colors group">
                                                     <td className="px-6 py-4">
-                                                        <span className="font-mono-tag text-sm font-semibold text-[#14213D]">{client.idCliente}</span>
+                                                        <span className="text-xs font-mono font-bold text-slate-900 bg-slate-100 px-2 py-1 rounded-md border border-slate-200/60">
+                                                            {client.idCliente}
+                                                        </span>
                                                     </td>
                                                     <td className="px-6 py-4">
-                                                        <span className="text-sm font-medium text-[#1F2130]">{client.nombreCliente}</span>
+                                                        <span className="text-sm font-semibold text-slate-800 group-hover:text-blue-600 transition-colors">
+                                                            {client.nombreCliente}
+                                                        </span>
                                                     </td>
                                                     <td className="px-6 py-4">
-                                                        <span className="text-sm text-[#5b5647]">{client.tipoPersona}</span>
+                                                        <span className="text-sm text-slate-600">{client.tipoPersona}</span>
                                                     </td>
                                                     <td className="px-6 py-4">
-                                                        <span className="text-sm text-[#5b5647]">{formatFecha(client.fechaAlta)}</span>
+                                                        <span className="text-sm text-slate-500">{formatFecha(client.fechaAlta)}</span>
                                                     </td>
                                                     <td className="px-6 py-4">
-                                                        <span className="text-sm text-[#5b5647]">{formatMonto(client.montoOperacionMensual, client.nombreMoneda)}</span>
+                                                        <span className="text-sm font-medium text-slate-700">
+                                                            {formatMonto(client.montoOperacionMensual, client.nombreMoneda)}
+                                                        </span>
                                                     </td>
                                                     <td className="px-6 py-4">
-                                                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold ${status.classes}`}>
+                                                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${status.classes}`}>
                                                             <StatusIcon className="w-3.5 h-3.5" />
                                                             {status.label}
                                                         </span>
                                                     </td>
                                                     <td className="px-6 py-4">
                                                         <div className="flex items-center gap-2">
-                                                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: risk.dot }} />
-                                                            <span className="text-sm font-medium text-[#1F2130]">{risk.label}</span>
+                                                            <span className={`w-2 h-2 rounded-full ${risk.dot}`} />
+                                                            <span className="text-sm font-medium text-slate-700">{risk.label}</span>
                                                         </div>
                                                     </td>
                                                 </tr>

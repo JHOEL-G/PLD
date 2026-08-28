@@ -4,58 +4,61 @@ import logo from '../../../../assets/react.svg'
 
 export default function SidebarHeader({ expanded, darkMode, search, setSearch, onToggle }) {
     return (
-        <>
-            <div className="flex items-center gap-3 px-4 pt-5 pb-3">
+        <div className="relative pt-5 px-3 mb-2 flex flex-col gap-4 shrink-0">
+            <div className="flex items-center gap-3 px-1 h-10 overflow-hidden">
                 <div
-                    className="flex shrink-0 items-center justify-center w-9 h-9 rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)]"
-                    style={{ background: `linear-gradient(135deg, var(--acrecer-purple), var(--acrecer-blue))` }}
+                    className="flex shrink-0 items-center justify-center w-8 h-8 rounded-xl shadow-md transition-transform duration-300"
+                    style={{ background: `linear-gradient(135deg, var(--acrecer-purple, #8b5cf6), var(--acrecer-blue, #3b82f6))` }}
                 >
-                    <img src={logo} alt="logoplataforma" className="w-[200%] h-[200%] object-contain" />
+                    <img src={logo} alt="Logo Plataforma" className="w-5 h-5 object-contain filter drop-shadow" />
                 </div>
-                <div
-                    className="overflow-hidden transition-all duration-300 ease-in-out"
-                    style={{ opacity: expanded ? 1 : 0, width: expanded ? 'auto' : 0 }}
-                >
-                    <div className="font-extrabold text-xs tracking-[-0.02em] leading-none text-foreground">
-                        PLATAFORMA<span style={{ color: 'var(--acrecer-purple)' }}> FORTIA PLD</span>
+
+                <div className={`flex flex-col whitespace-nowrap transition-all duration-300 ease-in-out ${expanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-3 pointer-events-none'
+                    }`}>
+                    <div className="font-black text-xs tracking-tight leading-none">
+                        PLATAFORMA <span style={{ color: 'var(--acrecer-purple, #8b5cf6)' }}>FORTIA PLD</span>
                     </div>
-                    <div className="text-[5px] font-semibold uppercase tracking-[0.2em] text-muted-foreground mt-[3px]">
-                        Sistema de Prevención Lavado Dinero
+                    <div className="text-[9px] font-semibold uppercase tracking-wider text-slate-400 mt-1">
+                        Sistema de Prevención
                     </div>
                 </div>
             </div>
 
             <button
                 onClick={onToggle}
-                className="absolute top-[62px] -right-4 w-8 h-8 flex items-center justify-center text-white border-none rounded-full cursor-pointer shadow-[0_8px_20px_rgba(0,0,0,0.18)] transition-all duration-300 z-50 hover:scale-[1.08] hover:brightness-[1.08] hover:shadow-[0_12px_24px_rgba(0,0,0,0.25)] active:scale-[0.95] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                aria-label="Toggle Sidebar"
+                className="absolute -right-5 top-10 w-7 h-7 flex items-center justify-center text-white rounded-full cursor-pointer shadow-lg transition-transform duration-300 z-50 hover:scale-110 active:scale-95 border border-white/20"
                 style={{
-                    background: `linear-gradient(135deg, var(--acrecer-magenta), var(--acrecer-coral))`,
-                    transform: `rotate(${expanded ? 0 : 180}deg)`
+                    background: `linear-gradient(135deg, var(--acrecer-magenta, #ec4899), var(--acrecer-coral, #f43f5e))`,
                 }}
             >
-                <ChevronRight size={12} strokeWidth={3} />
+                <ChevronRight
+                    size={14}
+                    strokeWidth={2.5}
+                    className={`transition-transform duration-300 ${expanded ? 'rotate-180' : 'rotate-0'}`}
+                />
             </button>
 
-            <div className="px-3 mb-3">
+            <div className="px-0.5">
                 <div
-                    className={`flex items-center rounded-xl px-3 py-2 gap-2 transition-all duration-200 ease-in-out border ${darkMode
-                        ? 'bg-[var(--bg-card)] border-[var(--border-color)]'
-                        : 'bg-secondary/50 border-border'
+                    className={`flex items-center rounded-xl px-2.5 py-2 transition-all duration-300 border ${darkMode
+                        ? 'bg-zinc-800/50 border-zinc-700/50 focus-within:border-purple-500'
+                        : 'bg-slate-100 border-slate-200 focus-within:border-purple-500'
                         }`}
-                    style={{ justifyContent: expanded ? 'flex-start' : 'center' }}
                 >
-                    <Search size={14} className="text-muted-foreground shrink-0" />
-                    {expanded && (
-                        <input
-                            type="text"
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                            placeholder="Buscar módulo..."
-                            className={`bg-transparent border-none outline-none text-xs w-full ${darkMode ? 'text-white' : 'text-black'} placeholder:text-muted-foreground`}
-                        />
-                    )}
+                    <Search size={16} className="text-slate-400 shrink-0" />
+
+                    <input
+                        type="text"
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                        placeholder="Buscar módulo..."
+                        tabIndex={expanded ? 0 : -1}
+                        className={`bg-transparent border-none outline-none text-xs ml-2 w-full whitespace-nowrap transition-all duration-300 ${darkMode ? 'text-white placeholder:text-zinc-500' : 'text-slate-800 placeholder:text-slate-400'
+                            } ${expanded ? 'opacity-100 w-full' : 'opacity-0 w-0 p-0 pointer-events-none'}`}
+                    />
                 </div>
             </div>
-        </>
+        </div>
     )
 }

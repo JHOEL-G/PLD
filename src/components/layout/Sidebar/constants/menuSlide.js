@@ -1,64 +1,66 @@
 export const menuSlide = [
     {
         id: 1,
-        moduloNombre: "Dashboard",
+        moduloNombre: "Dashboard General",
         icono: "home",
         url: "/"
     },
     {
         id: 2,
         moduloNombre: "Buzón Denuncias",
-        icono: "proyecto",
+        icono: "denuncias",
         url: "/listar"
+    },
+    {
+        id: 7,
+        moduloNombre: "Monitoreo",
+        icono: "monitoreo",
+        url: "/monitoreo"
+    },
+    {
+        id: 11,
+        moduloNombre: "Enfoque Basado en Riesgos",
+        icono: "riesgos",
     },
     {
         id: 3,
         moduloNombre: "Operaciones",
-        icono: "docker",
+        icono: "operaciones",
         url: "/lista"
     },
     {
         id: 4,
         moduloNombre: "Consulta Listas",
-        icono: "deploy",
-        url: "/usuarios"
+        icono: "listas",
+        url: "/consulta-listas"
     },
     {
         id: 5,
         moduloNombre: "Gestión Alertas",
-        icono: "docker",
+        icono: "alertas",
         url: "/gestion-alertas",
     },
     {
         id: 6,
         moduloNombre: "Perfil Transaccional",
-        icono: "usuario",
+        icono: "perfilTransaccional",
         url: "/perfil-transaccional"
-    },
-    {
-        id: 7,
-        moduloNombre: "Monitoreo",
-        icono: "usuario",
-        url: "/monitoreo"
     },
     {
         id: 8,
         moduloNombre: "Perfil Cliente",
-        icono: "usuario",
+        icono: "perfilCliente",
         url: "/perfil-cliente"
     },
     {
         id: 9,
         moduloNombre: "Auditoría",
-        icono: "usuario",
-        modulos: [
-            { id: 1, moduloNombre: "Listar", url: "/empresa" },
-        ]
+        icono: "auditoria",
     },
     {
         id: 10,
         moduloNombre: "Configuración",
-        icono: "usuario",
+        icono: "config",
         url: "/configuracion"
     }
 ];

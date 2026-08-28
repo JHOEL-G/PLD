@@ -5,12 +5,12 @@ import SidebarHeader from "./components/SidebarHeader";
 import SidebarMenu from "./components/SidebarMenu";
 import SidebarFooter from "./components/SidebarFooter";
 import { menuSlide } from "./constants/menuSlide";
+import DashboardHeader from "../../../features/dashboard/components/DashboardHeader";
 
 export default function SidebarLayout() {
     const [expanded, setExpanded] = useState(false);
     const [darkMode, setDarkMode] = useState(false);
     const [search, setSearch] = useState('');
-
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,16 +27,16 @@ export default function SidebarLayout() {
 
 
     return (
-        <div className={`flex w-full h-screen ${darkMode ? 'bg-[var(--acrecer-black)]' : 'bg-[var(--acrecer-white)]'}`}>
+        <div className={`flex w-full h-screen overflow-hidden ${darkMode ? 'bg-[var(--acrecer-black,#09090b)]' : 'bg-slate-50'}`}>
             <div
-                className="relative shrink-0 h-full p-2.5 transition-[width] duration-300 ease-out"
-                style={{ width: expanded ? "260px" : "88px" }}
+                className="relative shrink-0 h-full p-2 transition-[width] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                style={{ width: expanded ? "250px" : "80px" }}
             >
-                <aside className={`h-full flex flex-col overflow-hidden rounded-[20px] shadow-[10px_10px_50px_-12px_rgba(0,0,0,0.25)] transition-all duration-300 ease-in-out ${darkMode
-                    ? 'bg-gradient-to-b from-[#18181b] via-[#18181b] to-[var(--acrecer-black)] border border-[rgba(63,63,70,0.6)]'
-                    : 'bg-[var(--acrecer-white)] border border-[rgba(148,163,184,0.3)]'
+                <aside className={`h-full flex flex-col relative rounded-2xl shadow-xl transition-colors duration-300 backdrop-blur-md ${darkMode
+                    ? 'bg-zinc-900/90 border border-zinc-800/80 text-zinc-100'
+                    : 'bg-white/90 border border-slate-200/80 text-slate-800'
                     }`}>
-                    <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[var(--acrecer-purple)] to-[var(--acrecer-blue)]" />
+                    <div className="absolute top-0 left-4 right-4 h-[2px] bg-gradient-to-r from-transparent via-[var(--acrecer-purple,#8b5cf6)] to-[var(--acrecer-blue,#3b82f6)] opacity-70 rounded-full" />
 
                     <SidebarHeader
                         expanded={expanded}
@@ -62,6 +62,7 @@ export default function SidebarLayout() {
             </div>
 
             <main className="flex-1 p-6 overflow-auto relative">
+                <DashboardHeader />
                 <Outlet />
             </main>
         </div>

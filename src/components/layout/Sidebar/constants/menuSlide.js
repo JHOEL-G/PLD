@@ -62,5 +62,11 @@ export const menuSlide = [
         moduloNombre: "Configuración",
         icono: "config",
         url: "/configuracion"
+    },
+    {
+        id: 11,
+        moduloNombre: "cliente",
+        icono: "config",
+        url: "/cliente"
     }
 ];

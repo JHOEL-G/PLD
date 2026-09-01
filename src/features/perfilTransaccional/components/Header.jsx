@@ -1,7 +1,7 @@
 import { FileText } from 'lucide-react'
 import { Shield } from 'lucide-react'
 
-export default function Header({ onGenerarReporte }) {
+export default function Header({ onGenerarReporte, extraActions }) {
     return (
         <div className="bg-white border-b border-gray-200 px-6 py-4">
             <div className="flex items-center justify-between">
@@ -20,6 +20,13 @@ export default function Header({ onGenerarReporte }) {
                 >
                     <FileText className="w-4 h-4" />
                     <span>Generar Reporte</span>
+                </button>
+                <button
+                    onClick={extraActions}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+                >
+                    <FileText className="w-4 h-4" />
+                    <span>Configuracion Perfil</span>
                 </button>
             </div>
         </div>

@@ -50,8 +50,14 @@ export const menuSlide = [
         id: 8,
         moduloNombre: "Perfil Cliente",
         icono: "perfilCliente",
-        url: "/perfil-cliente"
+        url: "/cliente"
     },
+    /* {
+        id: 8,
+        moduloNombre: "Perfil Cliente",
+        icono: "perfilCliente",
+        url: "/perfil-cliente"
+    }, */
     {
         id: 9,
         moduloNombre: "Auditoría",
@@ -63,10 +69,5 @@ export const menuSlide = [
         icono: "config",
         url: "/configuracion"
     },
-    {
-        id: 11,
-        moduloNombre: "cliente",
-        icono: "config",
-        url: "/cliente"
-    }
+
 ];

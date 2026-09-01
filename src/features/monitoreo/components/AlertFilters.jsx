@@ -39,9 +39,11 @@ export default function AlertFilters({ filters, setFilters, onClear, filteredCou
                         onChange={(e) => setFilters({ ...filters, tipo: e.target.value })}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
-                        <option value="todos">Todos los tipos</option>
-                        <option value="Umbral USD">Umbral USD</option>
-                        <option value="Límite UMAs">Límite UMAs</option>
+                        <option value="Relevantes">Relevantes</option>
+                        <option value="Vulnerables">Vulnerables</option>
+                        <option value="Inusuales">Inusuales</option>
+                        <option value="Paises">Países</option>
+                        <option value="Listas">Listas</option>
                     </select>
                 </div>
 

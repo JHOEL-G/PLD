@@ -9,6 +9,8 @@ import TabsNav from "../../features/perfilTransaccional/components/TabsNav";
 import VulnerablesTab from "../../features/perfilTransaccional/components/VulnerablesTab";
 import { useState } from "react";
 import { inusualesInicial, listasInicial, paisesInicial, relevantesInicial, vulnerablesInicial } from "../../features/perfilTransaccional/utils/data";
+import { Settings } from "lucide-react";
+import ConfiguracionPerfilTransaccionalModal from "../../features/perfilTransaccional/components/ConfiguracionPerfilTransaccionalModal";
 
 export default function PerfilTransaccionalPage() {
     const navigate = useNavigate();
@@ -16,6 +18,9 @@ export default function PerfilTransaccionalPage() {
     const [activeTab, setActiveTab] = useState('relevantes');
     const [showModal, setShowModal] = useState(false);
     const [modalType, setModalType] = useState('');
+
+    const [showConfigModal, setShowConfigModal] = useState(false);
+    const [configPerfilTransaccional, setConfigPerfilTransaccional] = useState(null);
 
     const [relevantesData, setRelevantesData] = useState(relevantesInicial);
     const [vulnerablesData, setVulnerablesData] = useState(vulnerablesInicial);
@@ -65,9 +70,14 @@ export default function PerfilTransaccionalPage() {
         closeModal();
     };
 
+    const handleSaveConfig = (config) => {
+        setConfigPerfilTransaccional(config);
+        setShowConfigModal(false);
+    };
+
     return (
         <div className="min-h-screen bg-gray-50">
-            <Header onGenerarReporte={() => console.log('Generar reporte')} />
+            <Header onGenerarReporte={() => console.log('Generar reporte')} extraActions={() => setShowConfigModal(true)} />
 
             <TabsNav
                 activeTab={activeTab}
@@ -95,6 +105,14 @@ export default function PerfilTransaccionalPage() {
 
             {showModal && (
                 <AddModal modalType={modalType} onClose={closeModal} onSubmit={handleAddSubmit} />
+            )}
+
+            {showConfigModal && (
+                <ConfiguracionPerfilTransaccionalModal
+                    initialConfig={configPerfilTransaccional}
+                    onClose={() => setShowConfigModal(false)}
+                    onSave={handleSaveConfig}
+                />
             )}
         </div>
     )

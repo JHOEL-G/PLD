@@ -141,7 +141,7 @@ export default function ListasBusquedaPage() {
                             historyData={historyData}
                             onViewPDF={handleViewPDF}
                             onOpenNuevoRegistro={() => setShowNuevoRegistroModal(true)}
-                            onImportarExcel={() => navigate("/importar")}
+                            onImportarExcel={() => navigate("/plantilla-excel")}
                         />
                     )}
 

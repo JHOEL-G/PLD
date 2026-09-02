@@ -1,6 +1,8 @@
+import { TableConfig } from 'lucide-react';
 import { Shield, AlertTriangle, Activity, MapPin, List } from 'lucide-react';
 
 export const tabs = [
+    { id: 'configuracion', label: 'Configuracion', icon: TableConfig },
     { id: 'relevantes', label: 'Relevantes', icon: Shield },
     { id: 'vulnerables', label: 'Vulnerables', icon: AlertTriangle },
     { id: 'inusuales', label: 'Inusuales', icon: Activity },

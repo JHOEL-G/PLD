@@ -1,4 +1,5 @@
 import { X, FileText } from "lucide-react";
+import GestionPLDPage from "../../../pages/GestionPLD/GestionPLDPage";
 
 export default function NuevoRegistroModal({ show, onClose }) {
     if (!show) return null;
@@ -19,7 +20,7 @@ export default function NuevoRegistroModal({ show, onClose }) {
                     </button>
                 </div>
 
-                <PLDScreens />
+                <GestionPLDPage />
 
                 <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
                     <button

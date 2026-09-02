@@ -12,6 +12,9 @@ import SettingsPage from "../pages/Settings/SettingsPage";
 import OperacionPage from "../pages/Operacion/OperacionPage";
 import ListasBusquedaPage from "../pages/ListasBusqueda/ListasBusquedaPage";
 import ClienteDetallePage from "../pages/ClienteDetalle/ClienteDetallePage";
+import GestionPLDPage from "../pages/GestionPLD/GestionPLDPage";
+import ConfigurarPlantilla from "../componentes/configuracion_excel/ConfigurarPlantilla";
+import ImportarPasos from "../componentes/configuracion_excel/pasos_prueba/ImportarPasos";
 
 export default function RutasPage() {
     return (
@@ -29,6 +32,8 @@ export default function RutasPage() {
                 <Route path="/configuracion" element={<SettingsPage />} />
                 <Route path="/consulta-listas" element={<ListasBusquedaPage />} />
                 <Route path="/cliente" element={<ClienteDetallePage />} />
+                <Route path="/plantilla-excel" element={<ConfigurarPlantilla />} />
+                <Route path="/importar/pasos" element={<ImportarPasos />} />
             </Route>
         </Routes>
     )

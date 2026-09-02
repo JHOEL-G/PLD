@@ -1,9 +1,6 @@
 import { useState } from "react";
-import { X, Info } from "lucide-react";
+import { Info } from "lucide-react";
 
-// ---------------------------------------------------------------------------
-// Datos de configuración por defecto — sustituir por los que vengan del API
-// ---------------------------------------------------------------------------
 const PARAMETROS_INICIALES = [
     {
         id: "evaluarApartirDe",
@@ -60,14 +57,8 @@ const TIPOS_PRODUCTO = ["LINEA DE CREDITO", "CREDITO SIMPLE", "ARRENDAMIENTO"];
 const TIPOS_CLIENTE = ["CRÉDITOS INDIVIDUALES", "CRÉDITOS GRUPALES", "PERSONA MORAL"];
 const ENCUESTAS = ["PERFIL TRANSACCIONAL", "CONOCE A TU CLIENTE"];
 
-// ---------------------------------------------------------------------------
-// UI helpers
-// ---------------------------------------------------------------------------
 function Toggle({ checked, onChange, color = "emerald" }) {
-    const on =
-        color === "red"
-            ? "bg-red-400"
-            : "bg-emerald-500";
+    const on = color === "red" ? "bg-red-400" : "bg-emerald-500";
     return (
         <button
             type="button"
@@ -103,14 +94,12 @@ function Select({ label, value, onChange, options }) {
     );
 }
 
-// ---------------------------------------------------------------------------
-// Modal
-// ---------------------------------------------------------------------------
-export default function ConfiguracionPerfilTransaccionalModal({
-    onClose,
-    onSave,
-    initialConfig,
-}) {
+/**
+ * Igual que ConfiguracionPerfilTransaccionalModal pero sin overlay/backdrop
+ * ni botón de cerrar, para poder incrustarse directamente dentro de un tab
+ * (activeTab === 'configuracion') en vez de mostrarse como modal flotante.
+ */
+export default function ConfiguracionPerfilTransaccionalTab({ initialConfig, onSave }) {
     const [tipoProducto, setTipoProducto] = useState(
         initialConfig?.tipoProducto ?? TIPOS_PRODUCTO[0]
     );
@@ -131,112 +120,93 @@ export default function ConfiguracionPerfilTransaccionalModal({
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-            {/* backdrop */}
-            <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-[1px]" onClick={onClose} />
+        <div className="w-full bg-white rounded-lg shadow-sm border border-slate-100">
+            {/* header estático, sin botón de cerrar */}
+            <div className="px-6 py-4 bg-slate-700 rounded-t-lg">
+                <h2 className="text-white text-lg font-semibold">Configuración perfil transaccional</h2>
+            </div>
 
-            {/* modal */}
-            <div className="relative w-full max-w-2xl bg-white rounded-lg shadow-xl overflow-hidden max-h-[90vh] flex flex-col">
-                {/* header */}
-                <div className="flex items-center justify-between px-6 py-4 bg-slate-700">
-                    <h2 className="text-white text-lg font-semibold">Configuración perfil transaccional</h2>
-                    <button
-                        onClick={onClose}
-                        className="text-white/80 hover:text-white transition"
-                        aria-label="Cerrar"
-                    >
-                        <X size={20} />
-                    </button>
+            {/* body */}
+            <div className="px-6 py-5 space-y-5">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Select
+                        label="Tipo de producto"
+                        value={tipoProducto}
+                        onChange={setTipoProducto}
+                        options={TIPOS_PRODUCTO}
+                    />
+                    <Select
+                        label="Tipo de cliente"
+                        value={tipoCliente}
+                        onChange={setTipoCliente}
+                        options={TIPOS_CLIENTE}
+                    />
+                    <Select label="Encuesta" value={encuesta} onChange={setEncuesta} options={ENCUESTAS} />
                 </div>
 
-                {/* body */}
-                <div className="px-6 py-5 overflow-y-auto space-y-5">
-                    <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                        <Select
-                            label="Tipo de producto"
-                            value={tipoProducto}
-                            onChange={setTipoProducto}
-                            options={TIPOS_PRODUCTO}
-                        />
-                        <Select
-                            label="Tipo de cliente"
-                            value={tipoCliente}
-                            onChange={setTipoCliente}
-                            options={TIPOS_CLIENTE}
-                        />
-                        <Select label="Encuesta" value={encuesta} onChange={setEncuesta} options={ENCUESTAS} />
+                <div>
+                    <div className="grid grid-cols-[1fr_140px_90px_90px] gap-4 px-1 pb-2 text-sm font-semibold text-slate-500">
+                        <span></span>
+                        <span>Valor</span>
+                        <span>Alto riesgo</span>
+                        <span>Reporte</span>
                     </div>
 
-                    <div>
-                        <div className="grid grid-cols-[1fr_140px_90px_90px] gap-4 px-1 pb-2 text-sm font-semibold text-slate-500">
-                            <span></span>
-                            <span>Valor</span>
-                            <span>Alto riesgo</span>
-                            <span>Reporte</span>
-                        </div>
-
-                        <div className="divide-y divide-slate-100 border-t border-slate-100">
-                            {parametros.map((p) => (
-                                <div
-                                    key={p.id}
-                                    className="grid grid-cols-[1fr_140px_90px_90px] gap-4 items-center py-3.5 px-1"
-                                >
-                                    <div className="flex items-center gap-1.5 text-sm font-semibold text-slate-600">
-                                        <span>{p.label}</span>
-                                        <span title={p.tooltip}>
-                                            <Info size={13} className="text-slate-300 shrink-0" />
-                                        </span>
-                                    </div>
-
-                                    <input
-                                        type="number"
-                                        value={p.valor}
-                                        onChange={(e) =>
-                                            updateParametro(p.id, { valor: e.target.value === "" ? "" : Number(e.target.value) })
-                                        }
-                                        className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-200 focus:border-sky-400"
-                                    />
-
-                                    {p.soloValor ? (
-                                        <span />
-                                    ) : (
-                                        <Toggle
-                                            checked={p.altoRiesgo}
-                                            onChange={(v) => updateParametro(p.id, { altoRiesgo: v })}
-                                            color="red"
-                                        />
-                                    )}
-
-                                    {p.soloValor ? (
-                                        <span />
-                                    ) : (
-                                        <Toggle
-                                            checked={p.reporte}
-                                            onChange={(v) => updateParametro(p.id, { reporte: v })}
-                                            color="emerald"
-                                        />
-                                    )}
+                    <div className="divide-y divide-slate-100 border-t border-slate-100">
+                        {parametros.map((p) => (
+                            <div
+                                key={p.id}
+                                className="grid grid-cols-[1fr_140px_90px_90px] gap-4 items-center py-3.5 px-1"
+                            >
+                                <div className="flex items-center gap-1.5 text-sm font-semibold text-slate-600">
+                                    <span>{p.label}</span>
+                                    <span title={p.tooltip}>
+                                        <Info size={13} className="text-slate-300 shrink-0" />
+                                    </span>
                                 </div>
-                            ))}
-                        </div>
+
+                                <input
+                                    type="number"
+                                    value={p.valor}
+                                    onChange={(e) =>
+                                        updateParametro(p.id, { valor: e.target.value === "" ? "" : Number(e.target.value) })
+                                    }
+                                    className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-200 focus:border-sky-400"
+                                />
+
+                                {p.soloValor ? (
+                                    <span />
+                                ) : (
+                                    <Toggle
+                                        checked={p.altoRiesgo}
+                                        onChange={(v) => updateParametro(p.id, { altoRiesgo: v })}
+                                        color="red"
+                                    />
+                                )}
+
+                                {p.soloValor ? (
+                                    <span />
+                                ) : (
+                                    <Toggle
+                                        checked={p.reporte}
+                                        onChange={(v) => updateParametro(p.id, { reporte: v })}
+                                        color="emerald"
+                                    />
+                                )}
+                            </div>
+                        ))}
                     </div>
                 </div>
+            </div>
 
-                {/* footer */}
-                <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100">
-                    <button
-                        onClick={onClose}
-                        className="px-5 py-2 rounded-md border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition"
-                    >
-                        Cerrar
-                    </button>
-                    <button
-                        onClick={handleSave}
-                        className="px-5 py-2 rounded-md bg-sky-600 text-white text-sm font-medium hover:bg-sky-700 transition"
-                    >
-                        Guardar
-                    </button>
-                </div>
+            {/* footer: solo Guardar, ya no hay "Cerrar" porque no es modal */}
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100">
+                <button
+                    onClick={handleSave}
+                    className="px-5 py-2 rounded-md bg-sky-600 text-white text-sm font-medium hover:bg-sky-700 transition"
+                >
+                    Guardar
+                </button>
             </div>
         </div>
     );

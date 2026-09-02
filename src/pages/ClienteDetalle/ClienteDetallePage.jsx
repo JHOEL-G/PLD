@@ -8,8 +8,13 @@ import TabsNav from "../../features/clienteDetalle/components/TabsNav";
 import TopBar from "../../features/clienteDetalle/components/TopBar";
 import { cliente } from "../../features/clienteDetalle/constants/clienteMock";
 
+const PLD_SUBTABS = ["transaccional", "ebr"];
+
 export default function ClienteDetallePage() {
     const [tab, setTab] = useState("cliente");
+
+    const isPldSection = tab === "pld" || PLD_SUBTABS.includes(tab);
+    const pldSubTab = PLD_SUBTABS.includes(tab) ? tab : "transaccional";
 
     return (
         <div className="min-h-screen bg-slate-100/70 flex flex-col font-sans text-slate-800 antialiased">
@@ -27,7 +32,8 @@ export default function ClienteDetallePage() {
                         {tab === "seguimientos" && <PlaceholderTab label="Seguimientos" />}
                         {tab === "productos" && <ProductosTab />}
                         {tab === "archivos" && <PlaceholderTab label="Archivos" />}
-                        {tab === "pld" && <PldTab />}
+                        {isPldSection && <PldTab subTab={pldSubTab} />}
+
                         {tab === "circulo" && <PlaceholderTab label="Círculo de Crédito" />}
                     </div>
                 </main>

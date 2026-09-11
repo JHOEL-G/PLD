@@ -1,31 +1,34 @@
 import { Download, Plus, Clock, CheckCircle2, AlertTriangle, Eye } from "lucide-react";
+import { formatFecha } from "../../../utils/getFormant";
 
-const ResultadoBadge = ({ resultado }) => {
-    if (resultado === "sin") {
+const ResultadoBadge = ({ nombreResultado }) => {
+    const texto = (nombreResultado || "").toLowerCase();
+
+    if (texto.includes("sin coincidencia")) {
         return (
             <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
                 <CheckCircle2 size={14} />
-                Sin coincidencias
+                {nombreResultado}
             </span>
         );
     }
-    if (resultado === "pep") {
+    if (texto.includes("pep")) {
         return (
             <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-100 text-orange-700 rounded-lg text-sm font-medium">
                 <AlertTriangle size={14} />
-                Coincidencia PEP
+                {nombreResultado}
             </span>
         );
     }
     return (
         <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm font-medium">
             <AlertTriangle size={14} />
-            Coincidencia Lista Propia
+            {nombreResultado}
         </span>
     );
 };
 
-export default function HistoryScreen({ onOpenCreateModal, historyData }) {
+export default function HistoryScreen({ onOpenCreateModal, historyData, onViewPDF, isLoading, isError }) {
     return (
         <div className="animate-fadeIn">
             <div className="bg-white rounded-lg shadow-sm p-6">
@@ -51,53 +54,72 @@ export default function HistoryScreen({ onOpenCreateModal, historyData }) {
                     </div>
                 </div>
 
-                <div className="overflow-x-auto border border-gray-200 rounded-lg">
-                    <table className="w-full">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Fecha y Hora</th>
-                                <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Nombre Consultado</th>
-                                <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Listas Consultadas</th>
-                                <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Resultado</th>
-                                <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Usuario</th>
-                                <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-100">
-                            {historyData.map((item) => (
-                                <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-4 py-4 whitespace-nowrap">
-                                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                                            <Clock size={14} className="text-gray-400" />
-                                            {item.fecha}
-                                        </div>
-                                    </td>
-                                    <td className="px-4 py-4 whitespace-nowrap">
-                                        <span className="font-semibold text-gray-900">{item.nombre}</span>
-                                    </td>
-                                    <td className="px-4 py-4 whitespace-nowrap">
-                                        <span className="text-sm text-gray-600">{item.listas}</span>
-                                    </td>
-                                    <td className="px-4 py-4 whitespace-nowrap">
-                                        <ResultadoBadge resultado={item.resultado} />
-                                    </td>
-                                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
-                                        {item.usuario}
-                                    </td>
-                                    <td className="px-4 py-4 whitespace-nowrap">
-                                        <button
-                                            onClick={() => onViewPDF(item)}
-                                            className="text-sm font-medium text-purple-600 hover:text-purple-700 hover:underline flex items-center gap-1"
-                                        >
-                                            <Eye size={14} />
-                                            Ver Constancia
-                                        </button>
-                                    </td>
+                {isLoading && (
+                    <p className="text-sm text-gray-500 py-6 text-center">Cargando historial...</p>
+                )}
+
+                {isError && (
+                    <p className="text-sm text-red-600 py-6 text-center">
+                        Ocurrió un error al cargar el historial.
+                    </p>
+                )}
+
+                {!isLoading && !isError && (
+                    <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                        <table className="w-full">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Fecha y Hora</th>
+                                    <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Nombre Consultado</th>
+                                    <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Listas Consultadas</th>
+                                    <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Resultado</th>
+                                    <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Usuario</th>
+                                    <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Acciones</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-100">
+                                {historyData.length === 0 && (
+                                    <tr>
+                                        <td colSpan={6} className="px-4 py-8 text-center text-sm text-gray-500">
+                                            No hay registros en el historial.
+                                        </td>
+                                    </tr>
+                                )}
+                                {historyData.map((item) => (
+                                    <tr key={item.idCoincidencia} className="hover:bg-gray-50 transition-colors">
+                                        <td className="px-4 py-4 whitespace-nowrap">
+                                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                                                <Clock size={14} className="text-gray-400" />
+                                                {formatFecha(item.fechaCreacion)}
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-4 whitespace-nowrap">
+                                            <span className="font-semibold text-gray-900">{item.nombreConsultado}</span>
+                                        </td>
+                                        <td className="px-4 py-4 whitespace-nowrap">
+                                            <span className="text-sm text-gray-600">{item.listasConsultadas}</span>
+                                        </td>
+                                        <td className="px-4 py-4 whitespace-nowrap">
+                                            <ResultadoBadge nombreResultado={item.nombreResultado} />
+                                        </td>
+                                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
+                                            {item.usuario}
+                                        </td>
+                                        <td className="px-4 py-4 whitespace-nowrap">
+                                            <button
+                                                onClick={() => onViewPDF(item)}
+                                                className="text-sm font-medium text-purple-600 hover:text-purple-700 hover:underline flex items-center gap-1"
+                                            >
+                                                <Eye size={14} />
+                                                Ver Constancia
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
         </div>
     )

@@ -1,6 +1,6 @@
 import { X, Clock, ChevronDown, CheckCircle2 } from "lucide-react";
 
-export default function CreateCoincidenceModal({ show, onClose, newCoincidence, onInputChange, onSubmit, }) {
+export default function CreateCoincidenceModal({ show, onClose, newCoincidence, onInputChange, onSubmit, isLoading }) {
     if (!show) return null;
 
     return (
@@ -8,10 +8,7 @@ export default function CreateCoincidenceModal({ show, onClose, newCoincidence, 
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
                 <div className="bg-gradient-to-r from-purple-600 to-purple-800 px-6 py-5 flex items-center justify-between">
                     <h2 className="text-xl font-bold text-white">Crear Nueva Coincidencia</h2>
-                    <button
-                        onClick={onClose}
-                        className="text-white hover:bg-white/20 rounded-full p-2 transition-colors"
-                    >
+                    <button onClick={onClose} className="text-white hover:bg-white/20 rounded-full p-2 transition-colors">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
@@ -75,14 +72,15 @@ export default function CreateCoincidenceModal({ show, onClose, newCoincidence, 
                         </label>
                         <div className="relative">
                             <select
-                                value={newCoincidence.resultado}
-                                onChange={(e) => onInputChange("resultado", e.target.value)}
+                                value={newCoincidence.resultadoId}
+                                onChange={(e) => onInputChange("resultadoId", Number(e.target.value))}
                                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all outline-none appearance-none text-gray-900 bg-white cursor-pointer"
                             >
-                                <option value="sin">Sin coincidencias</option>
-                                <option value="pep">Coincidencia PEP</option>
-                                <option value="negra">Coincidencia Lista Negra</option>
-                                <option value="propia">Coincidencia Lista Propia</option>
+                                <option value={0}>Selecciona un resultado</option>
+                                <option value={1}>Sin coincidencias</option>
+                                <option value={2}>Coincidencia PEP</option>
+                                <option value={3}>Coincidencia Lista Negra</option>
+                                <option value={4}>Coincidencia Lista Propia</option>
                             </select>
                             <ChevronDown
                                 className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
@@ -101,10 +99,11 @@ export default function CreateCoincidenceModal({ show, onClose, newCoincidence, 
                     </button>
                     <button
                         onClick={onSubmit}
-                        className="px-5 py-2.5 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors shadow-lg shadow-purple-200 flex items-center gap-2"
+                        disabled={isLoading}
+                        className="px-5 py-2.5 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors shadow-lg shadow-purple-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <CheckCircle2 size={18} />
-                        Crear Coincidencia
+                        {isLoading ? "Guardando..." : "Crear Coincidencia"}
                     </button>
                 </div>
             </div>

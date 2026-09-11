@@ -6,6 +6,8 @@ import AlertTabs from "../../features/gestionAlertas/components/AlertTabs";
 import AlertTiposConfig from "../../features/gestionAlertas/components/AlertTiposConfig";
 import StatusChangeModal from "../../features/gestionAlertas/components/StatusChangeModal";
 import { alertStats, initialAlertsData } from "../../features/gestionAlertas/constants/mockData";
+import { useListarTipoAlertas } from "../../features/gestionAlertas/hooks/useListarTipoAlertas";
+import { useConfiguracionAlertas } from "../../features/gestionAlertas/hooks/useConfiguracionAlertas";
 
 export default function GestionAlertasPage() {
     const [activeTab, setActiveTab] = useState("activas");
@@ -18,6 +20,14 @@ export default function GestionAlertasPage() {
     const [statusNotes, setStatusNotes] = useState("");
 
     const [alertsData, setAlertsData] = useState(initialAlertsData);
+
+    const {
+        data: tiposResponse,
+        isLoading: isLoadingTipos,
+        isError: isErrorTipos,
+    } = useListarTipoAlertas();
+
+    const { mutate: guardarConfiguracion, isPending: isSavingConfig } = useConfiguracionAlertas();
 
     const filteredAlerts = alertsData.filter((alert) => {
         const matchesStatus =
@@ -88,7 +98,13 @@ export default function GestionAlertasPage() {
                 )}
 
                 {activeTab === "tipos" && (
-                    <AlertTiposConfig onGuardar={() => { }} />
+                    <AlertTiposConfig
+                        tipos={tiposResponse}
+                        isLoading={isLoadingTipos}
+                        isError={isErrorTipos}
+                        isSaving={isSavingConfig}
+                        onGuardar={(payload) => guardarConfiguracion(payload)}
+                    />
                 )}
             </div>
 

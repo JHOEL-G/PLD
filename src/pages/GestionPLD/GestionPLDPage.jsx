@@ -6,27 +6,72 @@ import RegistroTab from '../../features/gestionPld/components/RegistroTab';
 import ListasTab from '../../features/gestionPld/components/ListasTab';
 import ActionsBar from '../../features/gestionPld/components/ActionsBar';
 import PLDModals from '../../features/gestionPld/components/PLDModals';
+import { useListarPld } from '../../features/gestionPld/hooks/useListarPld';
+import { useEffect } from 'react';
+import { toISODateTime } from '../../utils/formatFecha';
+import { useAgregarRegistroGeneral } from '../../features/gestionPld/hooks/useAgregarRegistroGeneral';
 
 export default function GestionPLDPage() {
     const [activeTab, setActiveTab] = useState('registro');
     const [formData, setFormData] = useState(INITIAL_FORM_DATA);
-    const [listasData, setListasData] = useState(
-        LISTAS_CONFIG.reduce((acc, curr) => ({ ...acc, [curr.id]: false }), {})
-    );
+    const [listasData, setListasData] = useState({});
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showCancelModal, setShowCancelModal] = useState(false);
+
+    const {
+        data: listasResponse,
+        isLoading: isLoadingListas,
+        isError: isErrorListas,
+    } = useListarPld();
+
+    const listasPld = listasResponse?.data ?? [];
+
+    useEffect(() => {
+        if (listasPld.length === 0) return;
+        setListasData(
+            listasPld.reduce((acc, curr) => ({ ...acc, [curr.codigo]: curr.activo }), {})
+        );
+    }, [listasResponse]);
+
+    const { mutate: agregarRegistroGeneral, isPending: isSaving } = useAgregarRegistroGeneral();
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleToggleChange = (id) => {
-        setListasData(prev => ({ ...prev, [id]: !prev[id] }));
+    const handleToggleChange = (codigo) => {
+        setListasData(prev => ({ ...prev, [codigo]: !prev[codigo] }));
     };
 
-    const handleSave = () => setShowSaveModal(true);
+    const handleSave = () => {
+        if (!formData.nombreCompleto || !formData.rfcCurp || !formData.fechaNacimiento ||
+            !formData.fechaListado || !formData.acuerdo || !formData.nombreDocumento) {
+            alert("Por favor complete todos los campos obligatorios");
+            return;
+        }
+
+        const payload = {
+            nombreCompleto: formData.nombreCompleto,
+            rfcCurp: formData.rfcCurp,
+            fechaNacimiento: toISODateTime(formData.fechaNacimiento),
+            alias: formData.alias ?? "",
+            fechaListado: toISODateTime(formData.fechaListado),
+            acuerdo: formData.acuerdo,
+            nombreDocumento: formData.nombreDocumento,
+        };
+
+        agregarRegistroGeneral(payload, {
+            onSuccess: () => {
+                setShowSaveModal(true);
+            },
+            onError: (error) => {
+                console.log("Error al guardar registro PLD", error);
+                alert("Ocurrió un error al guardar el registro. Intente de nuevo.");
+            },
+        });
+    };
 
     const handleConfirmDelete = () => setShowDeleteModal(false);
 
@@ -56,7 +101,13 @@ export default function GestionPLDPage() {
                             <RegistroTab formData={formData} onInputChange={handleInputChange} />
                         )}
                         {activeTab === 'listas' && (
-                            <ListasTab listasData={listasData} onToggleChange={handleToggleChange} />
+                            <ListasTab
+                                listas={listasPld}
+                                listasData={listasData}
+                                onToggleChange={handleToggleChange}
+                                isLoading={isLoadingListas}
+                                isError={isErrorListas}
+                            />
                         )}
                     </div>
                 </div>
@@ -66,6 +117,7 @@ export default function GestionPLDPage() {
                     onEdit={handleEdit}
                     onCancel={() => setShowCancelModal(true)}
                     onSave={handleSave}
+                    isSaving={isSaving}
                 />
             </div>
 

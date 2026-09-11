@@ -12,6 +12,9 @@ import { buildFechaActual, downloadRecordAsPDF } from "../../features/listasBusq
 import { Search } from "lucide-react";
 import { CheckCircle2 } from "lucide-react";
 import { Clock } from "lucide-react";
+import { useAgregarCoincidencia } from "../../features/listasBusqueda/hooks/useAgregarCoincidencia";
+import { useListarCoincidencia } from "../../features/listasBusqueda/hooks/useListarCoincidencia";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function ListasBusquedaPage() {
     const [currentScreen, setCurrentScreen] = useState("search");
@@ -25,9 +28,21 @@ export default function ListasBusquedaPage() {
 
     const pdfRef = useRef(null);
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
-    const [historyData, setHistoryData] = useState(INITIAL_HISTORY);
     const [newCoincidence, setNewCoincidence] = useState(EMPTY_COINCIDENCE);
+
+    const { mutate: agregarCoincidencia, isPending } = useAgregarCoincidencia();
+
+    const {
+        data: historyResponse,
+        isLoading: isLoadingHistory,
+        isError: isErrorHistory,
+    } = useListarCoincidencia();
+
+    const historyData = historyResponse?.data ?? [];
+
+    console.log(historyData)
 
     const handleInputChange = (field, value) => {
         setNewCoincidence((prev) => ({ ...prev, [field]: value }));
@@ -39,19 +54,23 @@ export default function ListasBusquedaPage() {
             return;
         }
 
-        const newEntry = {
-            id: historyData.length + 1,
-            fecha: buildFechaActual(),
-            nombre: newCoincidence.nombreConsultado,
-            listas: newCoincidence.listasConsultadas,
-            resultado: newCoincidence.resultado,
-            usuario: newCoincidence.usuario,
-        };
+        if (!newCoincidence.resultadoId) {
+            alert("Por favor seleccione un resultado");
+            return;
+        }
 
-        setHistoryData([newEntry, ...historyData]);
-        setNewCoincidence(EMPTY_COINCIDENCE);
-        setShowCreateModal(false);
-        setCurrentScreen("history");
+        agregarCoincidencia(newCoincidence, {
+            onSuccess: () => {
+                queryClient.invalidateQueries({ queryKey: ["coincidencia"] });
+                setNewCoincidence(EMPTY_COINCIDENCE);
+                setShowCreateModal(false);
+                setCurrentScreen("history");
+            },
+            onError: (error) => {
+                console.log("Error al crear coincidencia", error);
+                alert("Ocurrió un error al crear la coincidencia. Intente de nuevo.");
+            },
+        });
     };
 
     const handleViewPDF = (record) => {
@@ -61,7 +80,7 @@ export default function ListasBusquedaPage() {
 
     const handleDownloadPDF = () => {
         if (!selectedRecord) return;
-        downloadRecordAsPDF(pdfRef, `Constancia_Busqueda_${selectedRecord.nombre}`);
+        downloadRecordAsPDF(pdfRef, `Constancia_Busqueda_${selectedRecord.nombreConsultado}`);
     };
 
     const handlePrint = () => window.print();
@@ -89,7 +108,6 @@ export default function ListasBusquedaPage() {
 
             <div className="min-h-screen bg-gray-50">
                 <div className="max-w-7xl mx-auto p-6">
-                    {/* Header */}
                     <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
                         <div className="flex items-center gap-3">
                             <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
@@ -104,7 +122,6 @@ export default function ListasBusquedaPage() {
                         </div>
                     </div>
 
-                    {/* Tabs */}
                     <div className="bg-white rounded-lg shadow-sm mb-6">
                         <div className="flex border-b">
                             {TABS.map(({ key, label, icon: Icon }) => (
@@ -125,7 +142,6 @@ export default function ListasBusquedaPage() {
                         </div>
                     </div>
 
-                    {/* Contenido */}
                     {currentScreen === "search" && (
                         <SearchScreen
                             searchName={searchName}
@@ -148,6 +164,8 @@ export default function ListasBusquedaPage() {
                     {currentScreen === "history" && (
                         <HistoryScreen
                             historyData={historyData}
+                            isLoading={isLoadingHistory}
+                            isError={isErrorHistory}
                             onViewPDF={handleViewPDF}
                             onOpenCreateModal={() => setShowCreateModal(true)}
                         />
@@ -161,6 +179,7 @@ export default function ListasBusquedaPage() {
                 newCoincidence={newCoincidence}
                 onInputChange={handleInputChange}
                 onSubmit={handleCreateCoincidence}
+                isLoading={isPending}
             />
 
             <PDFViewerModal

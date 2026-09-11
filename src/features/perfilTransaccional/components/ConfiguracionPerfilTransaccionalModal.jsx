@@ -9,7 +9,7 @@ const PARAMETROS_INICIALES = [
         valor: 77900,
         altoRiesgo: false,
         reporte: false,
-        soloValor: true, // este parámetro no tiene toggles en la captura
+        soloValor: true,
     },
     {
         id: "montoMaximoPorMes",
@@ -94,11 +94,6 @@ function Select({ label, value, onChange, options }) {
     );
 }
 
-/**
- * Igual que ConfiguracionPerfilTransaccionalModal pero sin overlay/backdrop
- * ni botón de cerrar, para poder incrustarse directamente dentro de un tab
- * (activeTab === 'configuracion') en vez de mostrarse como modal flotante.
- */
 export default function ConfiguracionPerfilTransaccionalTab({ initialConfig, onSave }) {
     const [tipoProducto, setTipoProducto] = useState(
         initialConfig?.tipoProducto ?? TIPOS_PRODUCTO[0]
@@ -121,7 +116,6 @@ export default function ConfiguracionPerfilTransaccionalTab({ initialConfig, onS
 
     return (
         <div className="w-full bg-white rounded-lg shadow-sm border border-slate-100">
-            {/* header estático, sin botón de cerrar */}
             <div className="px-6 py-4 bg-slate-700 rounded-t-lg">
                 <h2 className="text-white text-lg font-semibold">Configuración perfil transaccional</h2>
             </div>
@@ -199,7 +193,6 @@ export default function ConfiguracionPerfilTransaccionalTab({ initialConfig, onS
                 </div>
             </div>
 
-            {/* footer: solo Guardar, ya no hay "Cerrar" porque no es modal */}
             <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100">
                 <button
                     onClick={handleSave}

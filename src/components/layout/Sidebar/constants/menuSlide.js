@@ -69,5 +69,10 @@ export const menuSlide = [
         icono: "config",
         url: "/configuracion"
     },
-
+    {
+        id: 11,
+        moduloNombre: "Reporte",
+        icono: "config",
+        url: "/reporte"
+    },
 ];

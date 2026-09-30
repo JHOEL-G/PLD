@@ -1,7 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import SidebarLayout from "../components/layout/Sidebar/SidebarLayout";
 import DashboardPage from "../pages/Dashboard/DashboardPage";
-import AgregarBuzonDenuncia from "../features/buzonDenuncias/components/AgregarBuzonDenuncia";
 import BuzonDenunciasPage from "../pages/BuzonDenuncias/BuzonDenunciasPage";
 import AgregarOperacionCliente from "../features/operaciones/components/AgregarOperacionCliente";
 import GestionAlertasPage from "../pages/GestionAlertas/GestionAlertasPage";
@@ -15,6 +14,8 @@ import ClienteDetallePage from "../pages/ClienteDetalle/ClienteDetallePage";
 import GestionPLDPage from "../pages/GestionPLD/GestionPLDPage";
 import ConfigurarPlantilla from "../componentes/configuracion_excel/ConfigurarPlantilla";
 import ImportarPasos from "../componentes/configuracion_excel/pasos_prueba/ImportarPasos";
+import AgregarBuzonDenuncia from "../features/buzonDenuncias/pages/AgregarBuzonDenuncia";
+import Reporte from "../features/Reporteria/components/Reporte";
 
 export default function RutasPage() {
     return (
@@ -34,6 +35,7 @@ export default function RutasPage() {
                 <Route path="/cliente" element={<ClienteDetallePage />} />
                 <Route path="/plantilla-excel" element={<ConfigurarPlantilla />} />
                 <Route path="/importar/pasos" element={<ImportarPasos />} />
+                <Route path="/reporte" element={<Reporte />} />
             </Route>
         </Routes>
     )

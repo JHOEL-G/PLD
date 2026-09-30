@@ -1,4 +1,4 @@
-import ListarBuzonDenuncia from "../../features/buzonDenuncias/components/ListarBuzonDenuncia";
+import ListarBuzonDenuncia from "../../features/buzonDenuncias/pages/ListarBuzonDenuncia";
 
 export default function BuzonDenunciasPage() {
     return (
